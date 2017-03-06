@@ -1,4 +1,3 @@
-
 const express = require ('express');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
@@ -39,10 +38,11 @@ app.put('/tasks/:id', function(req, res) {
     // console.log('request ok' + req.params.id);
     db.collection('listOfTasks')
         .updateOne(
-            { _id: ObjectID(req.params.id)}, //условие которое находит элемент
+            {id: +req.params.id}, //условие которое находит элемент
             { status: req.body.status,
               name: req.body.name,
-              date: req.body.date,
+              lastModifyDate: Date.now(),
+              id: req.body.id,
               description:  req.body.description
             }, //объект с данными, которые хотим обновить
             function(err, result){
@@ -59,7 +59,7 @@ app.put('/tasks/:id', function(req, res) {
 //принимает idэлемента  и удаляет его из базы
 app.delete('/tasks/:id', function(req, res) {
     db.collection('listOfTasks')
-        .deleteOne({ _id: ObjectID(req.params.id)},
+        .deleteOne({id: +req.params.id},
             function(err, result){
                 if (err) {
                     console.log(err);

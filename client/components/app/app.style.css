@@ -1,0 +1,34 @@
+[ng-cloak],
+[data-ng-cloak],
+[x-ng-cloak],
+.ng-cloak,
+.x-ng-cloak {
+    display: none !important;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+}
+
+.wrapper {
+    max-width: 1024px;
+    min-width: 600px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    border: 2px grey solid;
+}
+
+
+.clearfix:after {
+    content: '';
+    clear: both;
+    width: 100%;
+    font-size: 0;
+    display: block;
+}

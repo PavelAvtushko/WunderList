@@ -1,0 +1,20 @@
+.navigation {
+    min-width: 600px;
+    background: grey;
+    box-sizing: border-box;
+}
+
+.navigation a {
+    text-decoration: none;
+    background: grey;
+    padding: 20px;
+    float: left;
+    margin-left: 10px; 
+    border-radius: 10px;
+    color: white;
+}
+
+.navigation a:hover {
+    color: black;
+    background: #7ca39e;
+}
