@@ -1,13 +1,14 @@
 import {URL} from '../../constants.js';
 
 class tasksFormController {
-    constructor($http) {
+    constructor($http, $location) {
         console.log('tasksFormController...');
         this.description;
         this.title;
         this.data;
         this.columnID;
         this.$http = $http;
+        this.$location=$location;
     }
 
     sendData() {
@@ -25,7 +26,7 @@ class tasksFormController {
             "id": Date.now()
         };
 
-        this.$http.put(URL, newData).then(obj => {
+        this.$http.put('/tasks', newData).then(obj => {
             this.data.push(obj.data);
         });
 
@@ -37,10 +38,10 @@ class tasksFormController {
             .then((res) => {
                 this.data.length = 0;
             });
-        document.location.href = "#/Home";
+        this.$location.path("#/Home");
     }
 }
 
-tasksFormController.$inject = ['$http'];
+tasksFormController.$inject = ['$http', '$location'];
 
 export default tasksFormController;

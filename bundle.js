@@ -101,7 +101,7 @@
 	app.config(_appConfig2.default);
 
 	_angular2.default.element(document).ready(function () {
-		_angular2.default.bootstrap(document, ['app']);
+	    _angular2.default.bootstrap(document, ['app']);
 	});
 
 /***/ },
@@ -38807,7 +38807,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var tasksFormController = function () {
-	    function tasksFormController($http) {
+	    function tasksFormController($http, $location) {
 	        _classCallCheck(this, tasksFormController);
 
 	        console.log('tasksFormController...');
@@ -38816,6 +38816,7 @@
 	        this.data;
 	        this.columnID;
 	        this.$http = $http;
+	        this.$location = $location;
 	    }
 
 	    _createClass(tasksFormController, [{
@@ -38850,14 +38851,14 @@
 	            this.$http.delete(_constants.URL).then(function (res) {
 	                _this2.data.length = 0;
 	            });
-	            document.location.href = "#/Home";
+	            this.$location.path("#/Home");
 	        }
 	    }]);
 
 	    return tasksFormController;
 	}();
 
-	tasksFormController.$inject = ['$http'];
+	tasksFormController.$inject = ['$http', '$location'];
 
 	exports.default = tasksFormController;
 

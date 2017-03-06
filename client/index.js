@@ -25,5 +25,5 @@ app.component('tasksForm', TasksFormComponent);
 app.config(routing);
 
 angular.element(document).ready(() => {
-	angular.bootstrap(document, ['app']);
+    angular.bootstrap(document, ['app']);
 });
