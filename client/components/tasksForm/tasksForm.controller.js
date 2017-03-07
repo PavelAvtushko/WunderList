@@ -1,7 +1,7 @@
 import {URL} from '../../constants.js';
 
 class tasksFormController {
-    constructor($http, $location) {
+    constructor($http, $location, $window) {
         console.log('tasksFormController...');
         this.description;
         this.title;
@@ -42,6 +42,6 @@ class tasksFormController {
     }
 }
 
-tasksFormController.$inject = ['$http', '$location'];
+tasksFormController.$inject = ['$http', '$location', '$window'];
 
 export default tasksFormController;
