@@ -1,6 +1,6 @@
 const db = require('../db.js');
 
-exports.all = function(callback) {
+exports.getAllTasks = function(callback) {
     db.get()
         .collection('listOfTasks')
         .find()
@@ -20,7 +20,6 @@ exports.deleteById = function (itemId, callback) {
         })
 }
 
-
 exports.putNewTask = function(newData, callback) {
     db.get().collection('listOfTasks').insert(newData, function(err, result){
         callback(err, result);
@@ -28,7 +27,21 @@ exports.putNewTask = function(newData, callback) {
 }
 
 
-exports.deleteAllTasks = function(){
-    db.get().collection('listOfTasks').drop();
+exports.deleteAllTasks = function(callback){
+     db.get().collection('listOfTasks').remove({},
+        function(err, result){
+            callback(err, result);
+        });
 }
 
+
+exports.updateTask = function(itemId, newData, callback) {
+    db.get().collection('listOfTasks')
+        .updateOne(
+            {id: itemId}, //условие которое находит элемент
+            newData, //объект с данными, которые хотим обновить
+            function(err, result){
+                callback(err, result);
+            }
+    );
+}

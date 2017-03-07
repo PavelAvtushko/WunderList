@@ -38837,7 +38837,7 @@
 	                "id": Date.now()
 	            };
 
-	            this.$http.put(_constants.URL, newData).then(function (obj) {
+	            this.$http.put('/tasks', newData).then(function (obj) {
 	                _this.data.push(obj.data);
 	            });
 

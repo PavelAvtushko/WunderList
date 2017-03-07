@@ -5,7 +5,6 @@ let state = {
     db:null
 };
 
-
 //при вызове метода проверяется есть ли уже подключение
 //если его нет, то оно создается и записывается в state.db
 exports.connect = function (url, done) {

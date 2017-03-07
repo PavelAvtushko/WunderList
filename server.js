@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
 const tasksController = require('./server/controllers/tasksController');
+const db = require('./server/db');
 
-let db = require('./server/db');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
@@ -12,7 +12,7 @@ app.use(express.static(__dirname));
 
 
 //возвращает коллекцию из базы данных при загрузке приложения
-app.get('/tasks', tasksController.all);
+app.get('/tasks', tasksController.getAllTasks);
 
 //принимает новую запись в базу данных
 app.put('/tasks', tasksController.putNewTask);
@@ -21,29 +21,11 @@ app.put('/tasks', tasksController.putNewTask);
 app.delete('/tasks/:id', tasksController.deleteById);
 
 //удаляет всю коллекцию
-app.delete('/tasks', tasksController.deleteById);
+app.delete('/tasks', tasksController.deleteAllTasks);
 
 
 //принимает idэлемента  и записывает его смещение в базу
-app.put('/tasks/:id', function(req, res) {
-    // console.log('request ok' + req.params.id);
-    db.get().collection('listOfTasks')
-        .updateOne(
-            {id: +req.params.id}, //условие которое находит элемент
-            { status: req.body.status,
-              name: req.body.name,
-              lastModifyDate: Date.now(),
-              id: req.body.id,
-              description:  req.body.description
-            }, //объект с данными, которые хотим обновить
-            function(err, result){
-                if (err) {
-                    console.log(err);
-                    return res.sendStatus(500);
-                }
-                res.sendStatus(200);
-            });
-});
+app.put('/tasks/:id', tasksController.updateTask);
 
 
 //подключается в базе данных и запускает сервер
