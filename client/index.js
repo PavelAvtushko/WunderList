@@ -1,8 +1,10 @@
 import angular from 'angular';
 import uirouter from 'angular-ui-router';
+import 'jquery';
+import 'bootstrap/dist/css/bootstrap.css';
+
+
 import routing from './components/app/app.config.js';
-
-
 import AppComponent from './components/app/app.component';
 import NavbarComponent from './components/navbar/navbar.component';
 import HomeComponent from './components/home/home.component';

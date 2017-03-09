@@ -12,7 +12,9 @@
     "angular": "^1.6.2",
     "angular-ui-router": "^0.4.2",
     "body-parser": "^1.16.1",
+    "bootstrap": "^3.3.7",
     "express": "^4.14.1",
+    "jquery": "^3.1.1",
     "mongo": "^0.1.0"
   },
   "devDependencies": {
@@ -22,6 +24,7 @@
     "css-loader": "^0.26.1",
     "html-loader": "^0.4.5",
     "style-loader": "^0.13.1",
-    "webpack": "^1.12.12"
+    "url-loader": "^0.5.8",
+    "webpack": "^2.2.1"
   }
 }

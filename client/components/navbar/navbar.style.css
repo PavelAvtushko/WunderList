@@ -1,4 +1,4 @@
-.navigation {
+/*.navigation {
     min-width: 600px;
     background: grey;
     box-sizing: border-box;
@@ -10,11 +10,16 @@
     padding: 20px;
     float: left;
     margin-left: 10px; 
-    border-radius: 10px;
     color: white;
 }
 
 .navigation a:hover {
     color: black;
     background: #7ca39e;
+}
+*/
+
+.navbar-default .navbar-nav > li > a:hover {
+    background-color: grey;
+    color: white;
 }

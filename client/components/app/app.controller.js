@@ -1,10 +1,10 @@
 import {URL} from '../../constants.js';
 
 const COLUMNS = [
-    {id: 0, name: 'todo'},
-    {id: 1, name: 'in progress'},
-    {id: 2, name: 'test'},
-    {id: 3, name: 'done'}
+    {id: 0, name: 'Todo'},
+    {id: 1, name: 'In progress'},
+    {id: 2, name: 'Test'},
+    {id: 3, name: 'Done'}
 ];
 
 class AppController {

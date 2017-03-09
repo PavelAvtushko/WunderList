@@ -1,4 +1,4 @@
-h1, h2 {
+/*h1, h2 {
     text-align: center;
 }
 
@@ -6,15 +6,6 @@ h2 {
     text-transform: uppercase;
     color: rgba(26, 44, 15, 0.97);
     font-size: 15px;
-}
-
-.colomns {
-    vertical-align: top;
-    width: 22%;
-    min-width: 100px;
-    background: #7ca39e;
-    float: left;
-    margin: 1.5%;
 }
 
 .rows {
@@ -41,7 +32,6 @@ ul {
 }
 
 nav {
-/*    width: 100%;*/
     min-width: 600px;
     background: grey;
     box-sizing: border-box;
@@ -79,10 +69,6 @@ form {
     width: 300px;
 }
 
-/*form li {
-    margin: 5px;
-}
-*/
 form h2 {
     text-transform: uppercase;
     color: grey;
@@ -130,7 +116,30 @@ form select {
     transform: translate(-50%, -50%);
 }
 
-
 .taskTopPanel {
     position: relative;
+}
+
+.leftArrow span:after {
+    content: "";
+    height: 0;
+    width: 0;
+    border-style: solid;
+    border-width: 8px;
+    border-color: transparent grey transparent transparent ;
+    position: absolute;
+    right: -20px;
+    top: 2px;
+}
+
+.rightArrow span:before {
+    content: "";
+    height: 0;
+    width: 0;
+    border-style: solid;
+    border-width: 8px;
+    border-color: transparent transparent transparent grey;
+    position: absolute;
+    left: -20px;
+    top: 2px;
 }
