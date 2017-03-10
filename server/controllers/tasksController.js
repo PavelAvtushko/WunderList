@@ -32,7 +32,6 @@ exports.putNewTask = function(req, res) {
 }
 
 
-//удаляет все записи из базы данных
 exports.deleteAllTasks = function(req, res){
     Tasks.deleteAllTasks(function(err, result){
         if (err) {

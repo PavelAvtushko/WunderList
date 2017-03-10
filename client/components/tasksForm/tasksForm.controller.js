@@ -1,7 +1,7 @@
 import {URL} from '../../constants.js';
 
 class tasksFormController {
-    constructor($http, $location, $window) {
+    constructor($http, $location, $window, localstorageManager) {
         console.log('tasksFormController...');
         this.description;
         this.title;
@@ -9,14 +9,11 @@ class tasksFormController {
         this.columnID;
         this.$http = $http;
         this.$location=$location;
+        this.localstorage = localstorageManager;
     }
 
     sendData() {
         // debugger;
-        if (typeof this.title === "undefined" ||
-            typeof this.description === "undefined") {
-            return;
-        }
 
         let newData = {
             "name": this.title,
@@ -35,13 +32,21 @@ class tasksFormController {
 
     deleteTasks() {
         this.$http.delete(URL)
-            .then((res) => {
+            .then(res => {
                 this.data.length = 0;
             });
         this.$location.path("#/Home");
     }
+
+    // select(el) {
+    //     console.log(el)
+    //     // if (el.id === 0) {
+    //     //     return true;
+    //     // }
+    //     return false;
+    // }
 }
 
-tasksFormController.$inject = ['$http', '$location', '$window'];
+tasksFormController.$inject = ['$http', '$location', '$window' , 'localstorageManager'];
 
 export default tasksFormController;

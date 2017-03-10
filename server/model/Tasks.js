@@ -2,7 +2,7 @@ const db = require('../db.js');
 
 exports.getAllTasks = function(callback) {
     db.get()
-        .collection('listOfTasks')
+        .collection('userTasks')
         .find()
         .toArray (
             function (err, docs) {
@@ -13,7 +13,7 @@ exports.getAllTasks = function(callback) {
 
 exports.deleteById = function (itemId, callback) {
     db.get()
-        .collection('listOfTasks')
+        .collection('userTasks')
         .deleteOne({id: itemId},
         function(err, result){
             callback(err, result);
@@ -21,14 +21,14 @@ exports.deleteById = function (itemId, callback) {
 }
 
 exports.putNewTask = function(newData, callback) {
-    db.get().collection('listOfTasks').insert(newData, function(err, result){
+    db.get().collection('userTasks').insert(newData, function(err, result){
         callback(err, result);
     })
 }
 
 
 exports.deleteAllTasks = function(callback){
-     db.get().collection('listOfTasks').remove({},
+     db.get().collection('userTasks').remove({},
         function(err, result){
             callback(err, result);
         });
@@ -36,7 +36,7 @@ exports.deleteAllTasks = function(callback){
 
 
 exports.updateTask = function(itemId, newData, callback) {
-    db.get().collection('listOfTasks')
+    db.get().collection('userTasks')
         .updateOne(
             {id: itemId}, //условие которое находит элемент
             newData, //объект с данными, которые хотим обновить

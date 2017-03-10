@@ -42,17 +42,15 @@
             <div class="col-sm-6 col-sm-offset-2">
                 <select ng-model="$ctrl.columnID" class="form-control" >
 <!--                     <option ng-repeat = "el in $ctrl.columns" ng-selected="{{el.id == 0}}" value="{{el.id}}">{{el.name}}</option> -->
-                    <option ng-repeat = "el in $ctrl.columns" ng-selected="{{el.id == 0}}" value="{{el.id}}">{{el.name}}</option>
+                    <option ng-repeat = "el in $ctrl.columns" value="{{el.id}}" ng-selected="el.id == 0">{{el.name}}</option>
                 </select>
             </div>
         </div>
 
-        <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-6">
-              <input type = "submit" value = "add task" name = "addNewTask" ng-disabled = "(!$ctrl.description || !$ctrl.title)">
-        </div>
-        <div class="col-sm-offset-2 col-sm-6">
-            <input id = "delTasks" type = "button" value = "Clear tasks" ng-click = "$ctrl.deleteTasks()" name = "deleteAllTasks">
+        <div class="form-group ">
+        <div class="col-sm-7 navbar-right">
+                <input id = "delTasks" type = "button" value = "Clear tasks" ng-click = "$ctrl.deleteTasks()" name = "deleteAllTasks" class="btn btn-danger">
+                <input type = "submit" value = "Add task" name = "addNewTask" class="btn btn-info" ng-disabled = "(!$ctrl.description || !$ctrl.title)">
         </div>
         </div>
 

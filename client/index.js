@@ -9,7 +9,7 @@ import AppComponent from './components/app/app.component';
 import NavbarComponent from './components/navbar/navbar.component';
 import HomeComponent from './components/home/home.component';
 import TasksFormComponent from './components/tasksForm/tasksForm.component';
-// import TasksManager from './servises/tasksManager.js';
+import LocalstorageManager from './servises/LocalstorageManager.js';
 
 
 const app = angular.module('app', [uirouter]);
@@ -22,7 +22,7 @@ app.component('home', HomeComponent);
 
 app.component('tasksForm', TasksFormComponent);
 
-// app.service('tasksManager', TasksManager);
+app.service('localstorageManager', LocalstorageManager);
 
 app.config(routing);
 

@@ -8,15 +8,17 @@ const COLUMNS = [
 ];
 
 class AppController {
-    constructor($http) {
+    constructor($http, localstorageManager) {
         this.columns = COLUMNS;
         this.data = [];
-        $http.get(URL).then(obj => this.data = obj.data);
+        $http.get(URL).then(obj => {
+            this.data = obj.data;
+            localstorageManager.setObject('wunderList', obj.data);
+        });
         console.log('AppController...');
     }
 }
 
-
-AppController.$inject = ['$http'];
+AppController.$inject = ['$http', 'localstorageManager'];
 
 export default AppController;

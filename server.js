@@ -23,13 +23,13 @@ app.delete('/tasks/:id', tasksController.deleteById);
 //удаляет всю коллекцию
 app.delete('/tasks', tasksController.deleteAllTasks);
 
-
 //принимает idэлемента  и записывает его смещение в базу
 app.put('/tasks/:id', tasksController.updateTask);
 
 
 //подключается в базе данных и запускает сервер
-db.connect('mongodb://localhost:27017/myToDo', function(err){
+// db.connect('mongodb://localhost:27017/myToDo', function(err){
+    db.connect('mongodb://pasha:pashawunderlist@ds127190.mlab.com:27190/wunderlist', function(err){
     if(err) {
         return console.log(err);
     }

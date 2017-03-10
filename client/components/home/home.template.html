@@ -12,8 +12,8 @@
 <!--             <p> Author </p> -->
 
             <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveLeft(el)" ng-disabled = "$ctrl.columns.id === 0" ><i class="glyphicon glyphicon-chevron-left"></i></button>
-                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveRight(el)" ng-disabled = "$ctrl.columns.id === 3"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveLeft(el)" ng-hide = "taskType.id === 0" ><i class="glyphicon glyphicon-chevron-left"></i></button>
+                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveRight(el)" ng-hide = "taskType.id === $ctrl.columns.length - 1"><i class="glyphicon glyphicon-chevron-right"></i></button>
             </div>
         </div>
         <p> Total: {{quontity.length}}</p>
