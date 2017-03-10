@@ -429,6 +429,10 @@ var _home = __webpack_require__(11);
 
 var _home2 = _interopRequireDefault(_home);
 
+var _login = __webpack_require__(40);
+
+var _login2 = _interopRequireDefault(_login);
+
 var _tasksForm = __webpack_require__(15);
 
 var _tasksForm2 = _interopRequireDefault(_tasksForm);
@@ -448,6 +452,8 @@ app.component('navbar', _navbar2.default);
 app.component('home', _home2.default);
 
 app.component('tasksForm', _tasksForm2.default);
+
+app.component('logIn', _login2.default);
 
 app.service('localstorageManager', _LocalstorageManager2.default);
 
@@ -38334,15 +38340,10 @@ exports.default = appComponent;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _aboutTemplate = __webpack_require__(23);
-
-var _aboutTemplate2 = _interopRequireDefault(_aboutTemplate);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// import aboutHTML from '../about/about.template.html';
 
 var routing = ['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/Home');
+    $urlRouterProvider.otherwise('/');
     $stateProvider.state({
         name: 'Home',
         url: '/Home',
@@ -38352,9 +38353,9 @@ var routing = ['$stateProvider', '$urlRouterProvider', function ($stateProvider,
         url: '/AddNew',
         template: '<tasks-form columns = "$ctrl.columns" data = "$ctrl.data"></tasks-form>'
     }).state({
-        name: 'About',
-        url: '/About',
-        template: _aboutTemplate2.default
+        name: 'logIn',
+        url: '/',
+        template: '<log-In></log-In>'
     });
 }];
 
@@ -38538,92 +38539,6 @@ var NavbarComponent = {
 };
 
 exports.default = NavbarComponent;
-
-// import mainHTML from './header.html';
-
-
-// function greeting() {
-//     return {
-//         restrict: 'E',
-//         // scope: {
-//         //   name: '='
-//         // },
-//         template: mainHTML
-//     }
-// }
-
-// export default greeting;
-
-
-// function MyCtrl($http, tasksData, itemsAction) {
-//     console.log('MyCtrl call');
-//     this.col =  tasksData.col;
-//     this.data;
-//     itemsAction.getData().success(data => this.data = data);
-//     this.deleteItem = function(item){
-//         // console.log(this.data);
-//         itemsAction.deleteItem(item).success(data => {
-//             this.data = this.data.filter(element => element._id !== item._id);
-//             console.log(data);
-//         });
-//     };
-
-//     this.moveLeft = function (item) {
-//         if (item.status > 0) {
-//             itemsAction.changeStatus(item, false).success(data => {
-//                 console.log("response status:" + data);
-//             });
-//         }
-//     };
-
-//     this.moveRight = function (item) {
-//         if (item.status < this.col.length - 1) {
-//             itemsAction.changeStatus(item, true).success(data => {
-//                 console.log("response status:" + data);
-//             });
-//          }
-//     };
-//     this.deleteALL = function(){
-//         itemsAction.deleteAllItems()
-//             .success(res => {
-//                 this.data = [];
-//             });
-//     }
-// };
-
-// app.service('itemsAction', ['$http', function ($http) {
-//     this.getData = function() {
-//         return $http.get('/tasks');
-//     };
-
-//     this.changeStatus = function (item, direction) {  //true - двигать вправо //false - двигать влево
-//         direction ? item.status++ : item.status--;
-//         item.date = Date.now();
-//         let url = "/tasks/" + item._id;
-//         return $http.put(url, JSON.stringify(item))
-//     };
-
-//     this.deleteItem = function (item) {  
-//         let url = "/tasks/" + item._id;
-//         return $http.delete(url);
-//     };
-
-//     this.deleteAllItems = function () { 
-//         return $http.delete('/tasks');
-//     };
-
-// }]);
-
-// app.service('tasksData', ['$http', function ($http) {
-//     this.col = [
-//         {id:0, name: 'todo'},
-//         {id:1, name: 'in progress'},
-//         {id:2, name: 'test'},
-//         {id:3, name: 'done'}
-//     ];
-// }]);
-
-// app.controller("MyCtrl", ['$http', 'tasksData', 'itemsAction', MyCtrl]);
 
 /***/ }),
 /* 14 */
@@ -38876,12 +38791,7 @@ exports.push([module.i, "/*!\n * Bootstrap v3.3.7 (http://getbootstrap.com)\n * 
 
 
 /***/ }),
-/* 23 */
-/***/ (function(module, exports) {
-
-module.exports = "<div>\r\n    <h2> This is about page </h2>\r\n</div>\r\n\r\n";
-
-/***/ }),
+/* 23 */,
 /* 24 */
 /***/ (function(module, exports) {
 
@@ -38897,7 +38807,7 @@ module.exports = "<div class=\"card\">\r\n    <div class = \"col-md-3 panel pane
 /* 26 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class =\"row navbar-default\">\r\n\r\n<!-- \t\t<nav class = \"navbar navbar-default\">\r\n\t\t    <a ui-sref=\"Home\" ui-sref-active=\"active\">Home</a>\r\n\t\t    <a ui-sref=\"AddNew\" ui-sref-active=\"active\">Add New</a>\r\n\t\t</nav> -->\r\n\t<ul class=\"nav navbar-nav navigation\">\r\n        <li><a ui-sref=\"Home\" ui-sref-active=\"active\">Home <span class=\"sr-only\">(current)</span></a></li>\r\n        <li><a ui-sref=\"AddNew\" ui-sref-active=\"active\">Add New</a></li>\r\n        <li><a ui-sref=\"About\" ui-sref-active=\"active\">About</a></li>\r\n\t</ul>\r\n\r\n</div>\r\n";
+module.exports = "<div class =\"row navbar-default\">\r\n\r\n<!--        <nav class = \"navbar navbar-default\">\r\n            <a ui-sref=\"Home\" ui-sref-active=\"active\">Home</a>\r\n            <a ui-sref=\"AddNew\" ui-sref-active=\"active\">Add New</a>\r\n        </nav> -->\r\n    <ul class=\"nav navbar-nav navigation\">\r\n        <li><a ui-sref=\"Home\" ui-sref-active=\"active\">Home <span class=\"sr-only\">(current)</span></a></li>\r\n        <li><a ui-sref=\"AddNew\" ui-sref-active=\"active\">Add New</a></li>\r\n<!--         <li><a ui-sref=\"About\" ui-sref-active=\"active\">About</a></li> -->\r\n    </ul>\r\n\r\n</div>\r\n";
 
 /***/ }),
 /* 27 */
@@ -49292,6 +49202,108 @@ module.exports = "data:application/font-woff2;base64,d09GMgABAAAAAEZsAA8AAAAAsVw
 
 module.exports = __webpack_require__(4);
 
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var NavbarController = function NavbarController() {
+    _classCallCheck(this, NavbarController);
+
+    console.log('NavbarController');
+};
+
+exports.default = NavbarController;
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _logInTemplate = __webpack_require__(42);
+
+var _logInTemplate2 = _interopRequireDefault(_logInTemplate);
+
+var _logIn = __webpack_require__(39);
+
+var _logIn2 = _interopRequireDefault(_logIn);
+
+__webpack_require__(43);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var logInComponent = {
+    template: _logInTemplate2.default,
+    controller: _logIn2.default,
+    replace: true,
+    bindings: {
+        columns: '<',
+        data: '='
+    }
+};
+
+exports.default = logInComponent;
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports) {
+
+module.exports = "<form class=\"form-group col-sm-4 col-sm-offset-4\" >\r\n    <div class=\"form-group\">\r\n        <label for=\"exampleInputName2\">Name</label>\r\n        <input type=\"text\" class=\"form-control\" id=\"exampleInputName2\" placeholder=\"Jane Doe\">\r\n    </div>\r\n<!--     <div class=\"form-group\">\r\n        <label for=\"exampleInputEmail2\">Email</label>\r\n        <input type=\"email\" class=\"form-control\" id=\"exampleInputEmail2\" placeholder=\"jane.doe@example.com\">\r\n    </div> -->\r\n    <button type=\"submit\" class=\"btn btn-default\">Get data</button>\r\n</form>\r\n";
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(41);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../node_modules/css-loader/index.js!./logIn.style.css", function() {
+			var newContent = require("!!../../../node_modules/css-loader/index.js!./logIn.style.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
 
 /***/ })
 /******/ ]);

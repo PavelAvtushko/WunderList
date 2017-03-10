@@ -1,10 +1,10 @@
-import aboutHTML from '../about/about.template.html';
+// import aboutHTML from '../about/about.template.html';
 
 let routing = [
     '$stateProvider',
     '$urlRouterProvider',
     function($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise('/Home');
+        $urlRouterProvider.otherwise('/');
         $stateProvider
             .state({
                 name: 'Home',
@@ -17,9 +17,9 @@ let routing = [
                 template: '<tasks-form columns = "$ctrl.columns" data = "$ctrl.data"></tasks-form>'
             })
             .state({
-                name: 'About',
-                url: '/About',
-                template: aboutHTML
+                name: 'logIn',
+                url: '/',
+                template: '<log-In></log-In>'
     });
 }];
 

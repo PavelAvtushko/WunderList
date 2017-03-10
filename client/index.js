@@ -8,6 +8,7 @@ import routing from './components/app/app.config.js';
 import AppComponent from './components/app/app.component';
 import NavbarComponent from './components/navbar/navbar.component';
 import HomeComponent from './components/home/home.component';
+import LogInComponent from './components/login/login.component';
 import TasksFormComponent from './components/tasksForm/tasksForm.component';
 import LocalstorageManager from './servises/LocalstorageManager.js';
 
@@ -21,6 +22,8 @@ app.component('navbar', NavbarComponent);
 app.component('home', HomeComponent);
 
 app.component('tasksForm', TasksFormComponent);
+
+app.component('logIn', LogInComponent);
 
 app.service('localstorageManager', LocalstorageManager);
 
