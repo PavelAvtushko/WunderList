@@ -1,36 +1,29 @@
-<div>
 <h2 >Create new task</h2>
-    <form class="form-horizontal" ng-submit = "$ctrl.sendData($ctrl.user)" name = "addTask" novalidate>
-      
-        <div class="form-group">
-        <label for="inputTitle" class="col-sm-2 control-label">Title</label>
+<form class="form-horizontal" ng-submit = "$ctrl.sendData($ctrl.user)" name = "addTask" novalidate>
+    <div class="form-group">
+    <label for="inputTitle" class="col-sm-2 control-label">Title</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="inputTitle" placeholder="Title" ng-model = "$ctrl.title" name = "taskTitle">
+    </div>
+    </div>
+    <div class="form-group">
+        <label for="inputDescription" class="col-sm-2 control-label">Description</label>
         <div class="col-sm-6">
-          <input type="text" class="form-control" id="inputTitle" placeholder="Title" ng-model = "$ctrl.title" name = "taskTitle">
+          <textarea type="text" class="form-control" rows="4" id="inputDescription" placeholder="Description" ng-model = "$ctrl.description"></textarea>
         </div>
-        </div>
-
-
-        <div class="form-group">
-            <label for="inputDescription" class="col-sm-2 control-label">Description</label>
-            <div class="col-sm-6">
-              <textarea type="text" class="form-control" rows="4" id="inputDescription" placeholder="Description" ng-model = "$ctrl.description"></textarea>
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            <div class="col-sm-6 col-sm-offset-2">
-                <select ng-model="$ctrl.columnID" class="form-control" >
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-2">
+            <select ng-model="$ctrl.columnID" class="form-control" >
 <!--                     <option ng-repeat = "el in $ctrl.columns" ng-selected="{{el.id == 0}}" value="{{el.id}}">{{el.name}}</option> -->
-                    <option ng-repeat = "el in $ctrl.columns" value="{{el.id}}" ng-selected="el.id == 0">{{el.name}}</option>
-                </select>
-            </div>
+                <option ng-repeat = "el in $ctrl.columns" value="{{el.id}}" ng-selected="el.id == 0">{{el.name}}</option>
+            </select>
         </div>
-
-        <div class="form-group ">
-        <div class="col-sm-7 navbar-right">
-                <input id = "delTasks" type = "button" value = "Clear tasks" ng-click = "$ctrl.deleteTasks()" name = "deleteAllTasks" class="btn btn-danger">
-                <input type = "submit" value = "Add task" name = "addNewTask" class="btn btn-info" ng-disabled = "(!$ctrl.description || !$ctrl.title)">
-        </div>
-        </div>
+    </div>
+    <div class="form-group ">
+    <div class="col-sm-7 navbar-right">
+        <input id = "delTasks" type = "button" value = "Clear tasks" ng-click = "$ctrl.deleteTasks()" name = "deleteAllTasks" class="btn btn-danger">
+        <input type = "submit" value = "Add task" name = "addNewTask" class="btn btn-info" ng-disabled = "(!$ctrl.description || !$ctrl.title)">
+    </div>
+    </div>
 </form>

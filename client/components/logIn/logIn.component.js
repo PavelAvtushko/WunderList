@@ -5,7 +5,7 @@ import './logIn.style.css';
 let logInComponent = {
     template,
     controller,
-    replace: true,
+    // replace: true,
     bindings: {
         columns: '<',
         data: '='

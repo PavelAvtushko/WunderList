@@ -11,30 +11,32 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname));
 
 
-//возвращает коллекцию из базы данных при загрузке приложения
+//returns a new collection from the database 
 app.get('/tasks', tasksController.getAllTasks);
 
-//принимает и проверяет пользователя
+//checks an user's personal data and gives access
 app.post('/tasks', tasksController.logUser);
 
+//pushs a new data into the database 
 app.put('/tasks', tasksController.putNewTask);
 
-//принимает id элемента  и удаляет его из базы
+//accepts an id of task and removes this task from the database
 app.delete('/tasks/:id', tasksController.deleteById);
 
-//удаляет всю коллекцию
+//removes an user's collection
 app.delete('/tasks', tasksController.deleteAllTasks);
 
-//принимает idэлемента  и записывает его смещение в базу
+//accepts an id of task (with new position data) and updates the database
 app.put('/tasks/:id', tasksController.updateTask);
 
 
-//подключается в базе данных и запускает сервер
+//connects to the database and starts the server
 // db.connect('mongodb://localhost:27017/myToDo', function(err){
-    db.connect('mongodb://pasha:pashawunderlist@ds127190.mlab.com:27190/wunderlist', function(err){
-    if(err) {
-        return console.log(err);
-    }
+    db.connect('mongodb://pasha:pashawunderlist@ds127190.mlab.com:27190/wunderlist',
+    function(err){
+        if(err) {
+            return console.log(err);
+        }
     app.listen(8080, function(){
         console.log('connection...');
     })

@@ -1,19 +1,25 @@
 <div class="card">
     <div class = "col-md-3 panel panel-default" ng-repeat = "taskType in $ctrl.columns">
-            <h2 class="text-center">{{::taskType.name}}</h2>
+        <h2 class="text-center">{{::taskType.name}}</h2>
         <div ng-repeat = "el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' " class ="well">
             <div class = "pull-right card-icons">
-                <a ng-click = "$ctrl.deleteItem(el)" class = "pull-right"><i class ="glyphicon glyphicon-trash"></i></a>
-                <a ng-click = "" class = "pull-right"><i class ="glyphicon glyphicon-pencil"></i></a>
+                <a ng-click = "$ctrl.deleteItem(el)" class = "pull-right">
+                    <i class ="glyphicon glyphicon-trash"></i>
+                </a>
+                <a ng-click = "" class = "pull-right">
+                    <i class ="glyphicon glyphicon-pencil"></i>
+                </a>
             </div>
-
             <h4> {{el.name || "No name"}}</h4>
             <p> {{el.description || "No description"}}</p>
 <!--             <p> Author </p> -->
-
             <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveLeft(el)" ng-hide = "taskType.id === 0" ><i class="glyphicon glyphicon-chevron-left"></i></button>
-                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveRight(el)" ng-hide = "taskType.id === $ctrl.columns.length - 1"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveLeft(el)" ng-hide = "taskType.id === 0" >
+                    <i class="glyphicon glyphicon-chevron-left"></i>
+                </button>
+                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveRight(el)" ng-hide = "taskType.id === $ctrl.columns.length - 1">
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                </button>
             </div>
         </div>
         <p> Total: {{quontity.length}}</p>

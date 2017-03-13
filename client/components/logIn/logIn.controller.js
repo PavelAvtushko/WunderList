@@ -5,7 +5,6 @@ class LogInController {
         this.$location=$location;
         this.$http=$http;
         this.userInfo = userInfo;
-        // console.log('LogInController...')
     }
     
     submit(user){

@@ -5,7 +5,7 @@ import './tasksForm.style.css';
 let tasksFormComponent = {
     template,
     controller,
-    replace: true,
+    // replace: true,
     bindings: {
         columns: '<',
         data: '=',

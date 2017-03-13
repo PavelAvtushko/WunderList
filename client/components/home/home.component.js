@@ -5,7 +5,7 @@ import './home.style.css';
 let homeComponent = {
     template,
     controller,
-    replace: true,
+    // replace: true,
     bindings: {
         columns: '<',
         data: '=',

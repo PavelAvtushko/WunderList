@@ -9,9 +9,9 @@ const COLUMNS = [
 
 class AppController {
     constructor($http, $location, localstorageManager, userInfo) {
-        if (userInfo.name === undefined) {
+        if (!userInfo.name) {
             $location.path("/");
-        }
+        };
         this.columns = COLUMNS;
         this.userName = userInfo.name || 'none';
         this.data = [];

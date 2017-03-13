@@ -38,8 +38,8 @@ exports.deleteAllTasks = function(user, callback){
 exports.updateTask = function(user, itemId, newData, callback) {
     db.get().collection(user)
         .updateOne(
-            {id: itemId}, //условие которое находит элемент
-            newData, //объект с данными, которые хотим обновить
+            {id: itemId}, //finds element by id
+            newData,
             function(err, result){
                 callback(err, result);
             }

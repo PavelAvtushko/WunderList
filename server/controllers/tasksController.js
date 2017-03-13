@@ -2,7 +2,6 @@ const Tasks = require('../model/Tasks.js');
 
 exports.getAllTasks = function(req, res) {
     let userName = req.query.user;
-    // let userName = 'userTasks';
     Tasks.getAllTasks(userName, function(err, docs){
         if (err) {
             console.log(err);
@@ -12,9 +11,9 @@ exports.getAllTasks = function(req, res) {
     });
 }
 
+
 exports.deleteById = function(req, res) {
     let userName = req.query.user;
-    // let userName = 'userTasks';
     Tasks.deleteById(userName, +req.params.id, function(err, result){
         if (err) {
             console.log(err);
@@ -27,9 +26,6 @@ exports.deleteById = function(req, res) {
 
 exports.putNewTask = function(req, res) {
     let userName = req.query.user;
-    console.log('req.query.user....' + req.query.user);
-
-    // let userName = 'userTasks';
     Tasks.putNewTask(userName, req.body, function(err, result){
         if (err) {
             console.log(err);
@@ -42,7 +38,6 @@ exports.putNewTask = function(req, res) {
 
 exports.deleteAllTasks = function(req, res){
     let userName = req.query.user;
-    // let userName = 'userTasks';
     Tasks.deleteAllTasks(userName, function(err, result){
         if (err) {
             console.log(err);
@@ -55,7 +50,6 @@ exports.deleteAllTasks = function(req, res){
 
 exports.updateTask = function(req, res){
     let userName = req.query.user;
-    // let userName = 'userTasks';
     Tasks.updateTask(userName, +req.params.id,
         createTaskData(req),
         function(err, result){
@@ -69,7 +63,6 @@ exports.updateTask = function(req, res){
 
 
 exports.logUser = function(req, res) {
-    // console.log('post...' + req.body.userName);
     if (req.body.userName !== undefined) {
         res.json({
             'name': req.body.userName,
@@ -78,8 +71,6 @@ exports.logUser = function(req, res) {
     } 
     else res.send(404);
 }
-
-
 
 
 function createTaskData(req){
