@@ -9,15 +9,11 @@ class LogInController {
     }
     
     submit(user){
-        if (!user) {
-            return;
-        }
+        if (!user) {return;}
         this.$http.post(URL, {userName: user}).then((data) => {
-            // console.log('userName...' + data.data.name);
             this.userInfo.name = data.data.name;
             this.$location.path("/Home/Tasks");
         });
-        
     }
     
 }

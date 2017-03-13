@@ -38771,7 +38771,6 @@ var LogInController = function () {
                 return;
             }
             this.$http.post(_constants.URL, { userName: user }).then(function (data) {
-                // console.log('userName...' + data.data.name);
                 _this.userInfo.name = data.data.name;
                 _this.$location.path("/Home/Tasks");
             });
