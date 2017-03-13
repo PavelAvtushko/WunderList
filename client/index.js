@@ -11,6 +11,8 @@ import HomeComponent from './components/home/home.component';
 import LogInComponent from './components/login/login.component';
 import TasksFormComponent from './components/tasksForm/tasksForm.component';
 import LocalstorageManager from './servises/LocalstorageManager.js';
+import UserInfo from './servises/userInfo.js';
+
 
 
 const app = angular.module('app', [uirouter]);
@@ -26,6 +28,8 @@ app.component('tasksForm', TasksFormComponent);
 app.component('logIn', LogInComponent);
 
 app.service('localstorageManager', LocalstorageManager);
+
+app.service('userInfo', UserInfo);
 
 app.config(routing);
 

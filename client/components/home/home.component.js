@@ -8,7 +8,8 @@ let homeComponent = {
     replace: true,
     bindings: {
         columns: '<',
-        data: '='
+        data: '=',
+        user: '<'
     }
 };
 

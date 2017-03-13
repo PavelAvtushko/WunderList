@@ -8,7 +8,8 @@ let tasksFormComponent = {
     replace: true,
     bindings: {
         columns: '<',
-        data: '='
+        data: '=',
+        user: '<'
     }
 };
 

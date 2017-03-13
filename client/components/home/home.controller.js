@@ -11,7 +11,7 @@ class HomeController {
     _moveTask(task, direction){
         direction ? task.status++ : task.status--;
         task.lastModifyDate = Date.now();
-        this.$http.put(URL + task.id, task)
+        this.$http.put(URL + task.id + '?user=' + this.user, task)
             .then(obj => console.log(obj.status));
         return;
     }
@@ -31,7 +31,7 @@ class HomeController {
     }
 
     deleteItem(task){
-        this.$http.delete(URL + task.id)
+        this.$http.delete(URL + task.id + '?user=' + this.user)
             .then(obj => {
                 let index = this.data.findIndex(item => item.id === task.id);
                 this.data.splice(index, 1);

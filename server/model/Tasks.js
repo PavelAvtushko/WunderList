@@ -1,8 +1,8 @@
 const db = require('../db.js');
 
-exports.getAllTasks = function(callback) {
+exports.getAllTasks = function(user, callback) {
     db.get()
-        .collection('userTasks')
+        .collection(user)
         .find()
         .toArray (
             function (err, docs) {
@@ -11,32 +11,32 @@ exports.getAllTasks = function(callback) {
         )
 }
 
-exports.deleteById = function (itemId, callback) {
+exports.deleteById = function (user, itemId, callback) {
     db.get()
-        .collection('userTasks')
+        .collection(user)
         .deleteOne({id: itemId},
         function(err, result){
             callback(err, result);
         })
 }
 
-exports.putNewTask = function(newData, callback) {
-    db.get().collection('userTasks').insert(newData, function(err, result){
+exports.putNewTask = function(user, newData, callback) {
+    db.get().collection(user).insert(newData, function(err, result){
         callback(err, result);
     })
 }
 
 
-exports.deleteAllTasks = function(callback){
-     db.get().collection('userTasks').remove({},
+exports.deleteAllTasks = function(user, callback){
+     db.get().collection(user).remove({},
         function(err, result){
             callback(err, result);
         });
 }
 
 
-exports.updateTask = function(itemId, newData, callback) {
-    db.get().collection('userTasks')
+exports.updateTask = function(user, itemId, newData, callback) {
+    db.get().collection(user)
         .updateOne(
             {id: itemId}, //условие которое находит элемент
             newData, //объект с данными, которые хотим обновить

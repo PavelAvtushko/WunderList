@@ -14,7 +14,9 @@ app.use(express.static(__dirname));
 //возвращает коллекцию из базы данных при загрузке приложения
 app.get('/tasks', tasksController.getAllTasks);
 
-//принимает новую запись в базу данных
+//принимает и проверяет пользователя
+app.post('/tasks', tasksController.logUser);
+
 app.put('/tasks', tasksController.putNewTask);
 
 //принимает id элемента  и удаляет его из базы
@@ -33,7 +35,6 @@ app.put('/tasks/:id', tasksController.updateTask);
     if(err) {
         return console.log(err);
     }
-    // db = dataBase;
     app.listen(8080, function(){
         console.log('connection...');
     })

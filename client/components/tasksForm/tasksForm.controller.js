@@ -12,9 +12,7 @@ class tasksFormController {
         this.localstorage = localstorageManager;
     }
 
-    sendData() {
-        // debugger;
-
+    sendData(userName) {
         let newData = {
             "name": this.title,
             "status": this.columnID || "0",
@@ -23,7 +21,7 @@ class tasksFormController {
             "id": Date.now()
         };
 
-        this.$http.put('/tasks', newData).then(obj => {
+        this.$http.put(URL + '?user=' + this.user, newData).then(obj => {
             this.data.push(obj.data);
         });
 
@@ -31,20 +29,12 @@ class tasksFormController {
     }
 
     deleteTasks() {
-        this.$http.delete(URL)
+        this.$http.delete(URL + '?user=' + this.user)
             .then(res => {
                 this.data.length = 0;
             });
-        this.$location.path("#/Home");
+        this.$location.path("/Home/Tasks");
     }
-
-    // select(el) {
-    //     console.log(el)
-    //     // if (el.id === 0) {
-    //     //     return true;
-    //     // }
-    //     return false;
-    // }
 }
 
 tasksFormController.$inject = ['$http', '$location', '$window' , 'localstorageManager'];

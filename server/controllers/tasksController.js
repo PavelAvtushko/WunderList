@@ -1,7 +1,9 @@
 const Tasks = require('../model/Tasks.js');
 
 exports.getAllTasks = function(req, res) {
-    Tasks.getAllTasks(function(err, docs){
+    let userName = req.query.user;
+    // let userName = 'userTasks';
+    Tasks.getAllTasks(userName, function(err, docs){
         if (err) {
             console.log(err);
             return res.sendStatus(500);
@@ -11,7 +13,9 @@ exports.getAllTasks = function(req, res) {
 }
 
 exports.deleteById = function(req, res) {
-    Tasks.deleteById(+req.params.id, function(err, result){
+    let userName = req.query.user;
+    // let userName = 'userTasks';
+    Tasks.deleteById(userName, +req.params.id, function(err, result){
         if (err) {
             console.log(err);
             return res.sendStatus(500);
@@ -22,7 +26,11 @@ exports.deleteById = function(req, res) {
 
 
 exports.putNewTask = function(req, res) {
-    Tasks.putNewTask(req.body, function(err, result){
+    let userName = req.query.user;
+    console.log('req.query.user....' + req.query.user);
+
+    // let userName = 'userTasks';
+    Tasks.putNewTask(userName, req.body, function(err, result){
         if (err) {
             console.log(err);
             return res.sendStatus(500);
@@ -33,7 +41,9 @@ exports.putNewTask = function(req, res) {
 
 
 exports.deleteAllTasks = function(req, res){
-    Tasks.deleteAllTasks(function(err, result){
+    let userName = req.query.user;
+    // let userName = 'userTasks';
+    Tasks.deleteAllTasks(userName, function(err, result){
         if (err) {
             console.log(err);
             return res.sendStatus(500);
@@ -44,7 +54,9 @@ exports.deleteAllTasks = function(req, res){
 
 
 exports.updateTask = function(req, res){
-    Tasks.updateTask(+req.params.id,
+    let userName = req.query.user;
+    // let userName = 'userTasks';
+    Tasks.updateTask(userName, +req.params.id,
         createTaskData(req),
         function(err, result){
             if (err) {
@@ -54,6 +66,20 @@ exports.updateTask = function(req, res){
         res.sendStatus(200);
     });
 }
+
+
+exports.logUser = function(req, res) {
+    // console.log('post...' + req.body.userName);
+    if (req.body.userName !== undefined) {
+        res.json({
+            'name': req.body.userName,
+            'access' : true
+        });
+    } 
+    else res.send(404);
+}
+
+
 
 
 function createTaskData(req){

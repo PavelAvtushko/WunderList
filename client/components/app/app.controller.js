@@ -8,10 +8,14 @@ const COLUMNS = [
 ];
 
 class AppController {
-    constructor($http, localstorageManager) {
+    constructor($http, $location, localstorageManager, userInfo) {
+        if (userInfo.name === undefined) {
+            $location.path("/");
+        }
         this.columns = COLUMNS;
+        this.userName = userInfo.name || 'none';
         this.data = [];
-        $http.get(URL).then(obj => {
+        $http.get(URL + '?user=' + userInfo.name).then(obj => {
             this.data = obj.data;
             localstorageManager.setObject('wunderList', obj.data);
         });
@@ -19,6 +23,6 @@ class AppController {
     }
 }
 
-AppController.$inject = ['$http', 'localstorageManager'];
+AppController.$inject = ['$http', '$location', 'localstorageManager', 'userInfo'];
 
 export default AppController;

@@ -7,14 +7,19 @@ let routing = [
         $urlRouterProvider.otherwise('/');
         $stateProvider
             .state({
-                name: 'Home',
-                url: '/Home',
-                template: '<home columns = "$ctrl.columns" data = "$ctrl.data"></home>'
+                name: 'Home.Tasks',
+                url: '/Tasks',
+                template: '<home columns = "$ctrl.columns" data = "$ctrl.data" user = "$ctrl.userName"></home>'
             })
             .state({
-                name: 'AddNew',
+                name: 'Home',
+                url: '/Home',
+                template: '<app></app>'
+            })
+            .state({
+                name: 'Home.AddNew',
                 url: '/AddNew',
-                template: '<tasks-form columns = "$ctrl.columns" data = "$ctrl.data"></tasks-form>'
+                template: '<tasks-form columns = "$ctrl.columns" data = "$ctrl.data" user = "$ctrl.userName"></tasks-form>'
             })
             .state({
                 name: 'logIn',
