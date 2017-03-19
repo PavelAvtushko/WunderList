@@ -22,6 +22,11 @@ let routing = [
                 template: '<tasks-form columns = "$ctrl.columns" data = "$ctrl.data" user = "$ctrl.userName"></tasks-form>'
             })
             .state({
+                name: 'Home.Photo',
+                url: '/Photo',
+                template: '<photo></photo>'
+            })
+            .state({
                 name: 'logIn',
                 url: '/',
                 template: '<log-In></log-In>'

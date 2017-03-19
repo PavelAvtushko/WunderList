@@ -14,16 +14,13 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-2">
-            <select ng-model="$ctrl.columnID" class="form-control" >
-<!--                     <option ng-repeat = "el in $ctrl.columns" ng-selected="{{el.id == 0}}" value="{{el.id}}">{{el.name}}</option> -->
-                <option ng-repeat = "el in $ctrl.columns" value="{{el.id}}" ng-selected="el.id == 0">{{el.name}}</option>
-            </select>
+            <select ng-options="el.id as el.name for el in $ctrl.columns" ng-model="$ctrl.columnID" class="form-control"></select>
         </div>
     </div>
     <div class="form-group ">
-    <div class="col-sm-7 navbar-right">
-        <input id = "delTasks" type = "button" value = "Clear tasks" ng-click = "$ctrl.deleteTasks()" name = "deleteAllTasks" class="btn btn-danger">
-        <input type = "submit" value = "Add task" name = "addNewTask" class="btn btn-info" ng-disabled = "(!$ctrl.description || !$ctrl.title)">
+    <div class="col-sm-6 col-sm-offset-2 clearfix">
+        <input type = "submit" value = "Add new task" name = "addNewTask" class="btn btn-info pull-left" ng-disabled = "!$ctrl.description || !$ctrl.title">
+        <input id = "delTasks" type = "button" value = "Delete all tasks" ng-click = "$ctrl.deleteTasks()" name = "deleteAllTasks" class="btn btn-danger pull-left" ng-disabled = "!$ctrl.data.length">
     </div>
     </div>
 </form>

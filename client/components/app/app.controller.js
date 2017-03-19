@@ -19,7 +19,7 @@ class AppController {
             this.data = obj.data;
             localstorageManager.setObject('wunderList', obj.data);
         });
-        console.log('AppController...');
+       // console.log('AppController...');
     }
 }
 

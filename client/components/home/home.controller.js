@@ -5,7 +5,7 @@ class HomeController {
         this.$http = $http;
         this.columns;
         this.data;
-        console.log('HomeController...');
+        //console.log('HomeController...');
     }
 
     _moveTask(task, direction){

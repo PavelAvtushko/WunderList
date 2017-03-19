@@ -1,6 +1,6 @@
 class LocalstorageManager {
     constructor($window){
-        console.log('LocalstorageManager');
+        //console.log('LocalstorageManager');
         this.$window = $window;
     }
 
