@@ -12,6 +12,7 @@ import LogInComponent from './components/login/login.component';
 import PhotoComponent from './components/photo/photo.component';
 import TasksFormComponent from './components/tasksForm/tasksForm.component';
 import LocalstorageManager from './servises/LocalstorageManager.js';
+import ExifDataManager from './servises/exifDataManager.js';
 import UserInfo from './servises/userInfo.js';
 import MapManager from './servises/mapManager.js';
 
@@ -36,6 +37,8 @@ app.component('logIn', LogInComponent);
 app.service('localstorageManager', LocalstorageManager);
 
 app.service('userInfo', UserInfo);
+
+app.factory('exifDataManager', () => {return new ExifDataManager()});
 
 app.factory('mapManager', () => {return new MapManager('#googleMap', coord)});
 

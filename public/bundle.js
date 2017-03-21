@@ -393,17 +393,17 @@ exports.URL = URL;
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jQuery JavaScript Library v3.1.1
+ * jQuery JavaScript Library v3.2.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
  * https://sizzlejs.com/
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright JS Foundation and other contributors
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2016-09-22T22:30Z
+ * Date: 2017-03-20T18:59Z
  */
 ( function( global, factory ) {
 
@@ -482,7 +482,7 @@ var support = {};
 
 
 var
-	version = "3.1.1",
+	version = "3.2.1",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -630,11 +630,11 @@ jQuery.extend = jQuery.fn.extend = function() {
 
 				// Recurse if we're merging plain objects or arrays
 				if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
-					( copyIsArray = jQuery.isArray( copy ) ) ) ) {
+					( copyIsArray = Array.isArray( copy ) ) ) ) {
 
 					if ( copyIsArray ) {
 						copyIsArray = false;
-						clone = src && jQuery.isArray( src ) ? src : [];
+						clone = src && Array.isArray( src ) ? src : [];
 
 					} else {
 						clone = src && jQuery.isPlainObject( src ) ? src : {};
@@ -672,8 +672,6 @@ jQuery.extend( {
 	isFunction: function( obj ) {
 		return jQuery.type( obj ) === "function";
 	},
-
-	isArray: Array.isArray,
 
 	isWindow: function( obj ) {
 		return obj != null && obj === obj.window;
@@ -747,10 +745,6 @@ jQuery.extend( {
 	// Microsoft forgot to hump their vendor prefix (#9572)
 	camelCase: function( string ) {
 		return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
-	},
-
-	nodeName: function( elem, name ) {
-		return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 	},
 
 	each: function( obj, callback ) {
@@ -3237,6 +3231,13 @@ var siblings = function( n, elem ) {
 
 var rneedsContext = jQuery.expr.match.needsContext;
 
+
+
+function nodeName( elem, name ) {
+
+  return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
+
+};
 var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i );
 
 
@@ -3588,7 +3589,18 @@ jQuery.each( {
 		return siblings( elem.firstChild );
 	},
 	contents: function( elem ) {
-		return elem.contentDocument || jQuery.merge( [], elem.childNodes );
+        if ( nodeName( elem, "iframe" ) ) {
+            return elem.contentDocument;
+        }
+
+        // Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
+        // Treat the template element as a regular one in browsers that
+        // don't support it.
+        if ( nodeName( elem, "template" ) ) {
+            elem = elem.content || elem;
+        }
+
+        return jQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
 	jQuery.fn[ name ] = function( until, selector ) {
@@ -3686,7 +3698,7 @@ jQuery.Callbacks = function( options ) {
 		fire = function() {
 
 			// Enforce single-firing
-			locked = options.once;
+			locked = locked || options.once;
 
 			// Execute callbacks for all pending executions,
 			// respecting firingIndex overrides and runtime changes
@@ -3855,7 +3867,7 @@ function Thrower( ex ) {
 	throw ex;
 }
 
-function adoptValue( value, resolve, reject ) {
+function adoptValue( value, resolve, reject, noValue ) {
 	var method;
 
 	try {
@@ -3871,9 +3883,10 @@ function adoptValue( value, resolve, reject ) {
 		// Other non-thenables
 		} else {
 
-			// Support: Android 4.0 only
-			// Strict mode functions invoked without .call/.apply get global-object context
-			resolve.call( undefined, value );
+			// Control `resolve` arguments by letting Array#slice cast boolean `noValue` to integer:
+			// * false: [ value ].slice( 0 ) => resolve( value )
+			// * true: [ value ].slice( 1 ) => resolve()
+			resolve.apply( undefined, [ value ].slice( noValue ) );
 		}
 
 	// For Promises/A+, convert exceptions into rejections
@@ -3883,7 +3896,7 @@ function adoptValue( value, resolve, reject ) {
 
 		// Support: Android 4.0 only
 		// Strict mode functions invoked without .call/.apply get global-object context
-		reject.call( undefined, value );
+		reject.apply( undefined, [ value ] );
 	}
 }
 
@@ -4208,7 +4221,8 @@ jQuery.extend( {
 
 		// Single- and empty arguments are adopted like Promise.resolve
 		if ( remaining <= 1 ) {
-			adoptValue( singleValue, master.done( updateFunc( i ) ).resolve, master.reject );
+			adoptValue( singleValue, master.done( updateFunc( i ) ).resolve, master.reject,
+				!remaining );
 
 			// Use .then() to unwrap secondary thenables (cf. gh-3000)
 			if ( master.state() === "pending" ||
@@ -4279,15 +4293,6 @@ jQuery.extend( {
 	// A counter to track how many items to wait for before
 	// the ready event fires. See #6781
 	readyWait: 1,
-
-	// Hold (or release) the ready event
-	holdReady: function( hold ) {
-		if ( hold ) {
-			jQuery.readyWait++;
-		} else {
-			jQuery.ready( true );
-		}
-	},
 
 	// Handle when the DOM is ready
 	ready: function( wait ) {
@@ -4524,7 +4529,7 @@ Data.prototype = {
 		if ( key !== undefined ) {
 
 			// Support array or space separated string of keys
-			if ( jQuery.isArray( key ) ) {
+			if ( Array.isArray( key ) ) {
 
 				// If key is an array of keys...
 				// We always set camelCase keys, so remove that.
@@ -4750,7 +4755,7 @@ jQuery.extend( {
 
 			// Speed up dequeue by getting out quickly if this is just a lookup
 			if ( data ) {
-				if ( !queue || jQuery.isArray( data ) ) {
+				if ( !queue || Array.isArray( data ) ) {
 					queue = dataPriv.access( elem, type, jQuery.makeArray( data ) );
 				} else {
 					queue.push( data );
@@ -5127,7 +5132,7 @@ function getAll( context, tag ) {
 		ret = [];
 	}
 
-	if ( tag === undefined || tag && jQuery.nodeName( context, tag ) ) {
+	if ( tag === undefined || tag && nodeName( context, tag ) ) {
 		return jQuery.merge( [ context ], ret );
 	}
 
@@ -5734,7 +5739,7 @@ jQuery.event = {
 
 			// For checkbox, fire native event so checked state will be right
 			trigger: function() {
-				if ( this.type === "checkbox" && this.click && jQuery.nodeName( this, "input" ) ) {
+				if ( this.type === "checkbox" && this.click && nodeName( this, "input" ) ) {
 					this.click();
 					return false;
 				}
@@ -5742,7 +5747,7 @@ jQuery.event = {
 
 			// For cross-browser consistency, don't fire native .click() on links
 			_default: function( event ) {
-				return jQuery.nodeName( event.target, "a" );
+				return nodeName( event.target, "a" );
 			}
 		},
 
@@ -6019,11 +6024,12 @@ var
 	rscriptTypeMasked = /^true\/(.*)/,
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
 
+// Prefer a tbody over its parent table for containing new rows
 function manipulationTarget( elem, content ) {
-	if ( jQuery.nodeName( elem, "table" ) &&
-		jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ) {
+	if ( nodeName( elem, "table" ) &&
+		nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ) {
 
-		return elem.getElementsByTagName( "tbody" )[ 0 ] || elem;
+		return jQuery( ">tbody", elem )[ 0 ] || elem;
 	}
 
 	return elem;
@@ -6553,12 +6559,18 @@ var getStyles = function( elem ) {
 
 function curCSS( elem, name, computed ) {
 	var width, minWidth, maxWidth, ret,
+
+		// Support: Firefox 51+
+		// Retrieving style before computed somehow
+		// fixes an issue with getting wrong values
+		// on detached elements
 		style = elem.style;
 
 	computed = computed || getStyles( elem );
 
-	// Support: IE <=9 only
-	// getPropertyValue is only needed for .css('filter') (#12537)
+	// getPropertyValue is needed for:
+	//   .css('filter') (IE 9 only, #12537)
+	//   .css('--customProperty) (#3144)
 	if ( computed ) {
 		ret = computed.getPropertyValue( name ) || computed[ name ];
 
@@ -6624,6 +6636,7 @@ var
 	// except "table", "table-cell", or "table-caption"
 	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
 	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
+	rcustomProp = /^--/,
 	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
 	cssNormalTransform = {
 		letterSpacing: "0",
@@ -6651,6 +6664,16 @@ function vendorPropName( name ) {
 			return name;
 		}
 	}
+}
+
+// Return a property mapped along what jQuery.cssProps suggests or to
+// a vendor prefixed property.
+function finalPropName( name ) {
+	var ret = jQuery.cssProps[ name ];
+	if ( !ret ) {
+		ret = jQuery.cssProps[ name ] = vendorPropName( name ) || name;
+	}
+	return ret;
 }
 
 function setPositiveNumber( elem, value, subtract ) {
@@ -6713,43 +6736,30 @@ function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 
 function getWidthOrHeight( elem, name, extra ) {
 
-	// Start with offset property, which is equivalent to the border-box value
-	var val,
-		valueIsBorderBox = true,
+	// Start with computed style
+	var valueIsBorderBox,
 		styles = getStyles( elem ),
+		val = curCSS( elem, name, styles ),
 		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
 
-	// Support: IE <=11 only
-	// Running getBoundingClientRect on a disconnected node
-	// in IE throws an error.
-	if ( elem.getClientRects().length ) {
-		val = elem.getBoundingClientRect()[ name ];
+	// Computed unit is not pixels. Stop here and return.
+	if ( rnumnonpx.test( val ) ) {
+		return val;
 	}
 
-	// Some non-html elements return undefined for offsetWidth, so check for null/undefined
-	// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
-	// MathML - https://bugzilla.mozilla.org/show_bug.cgi?id=491668
-	if ( val <= 0 || val == null ) {
+	// Check for style in case a browser which returns unreliable values
+	// for getComputedStyle silently falls back to the reliable elem.style
+	valueIsBorderBox = isBorderBox &&
+		( support.boxSizingReliable() || val === elem.style[ name ] );
 
-		// Fall back to computed then uncomputed css if necessary
-		val = curCSS( elem, name, styles );
-		if ( val < 0 || val == null ) {
-			val = elem.style[ name ];
-		}
-
-		// Computed unit is not pixels. Stop here and return.
-		if ( rnumnonpx.test( val ) ) {
-			return val;
-		}
-
-		// Check for style in case a browser which returns unreliable values
-		// for getComputedStyle silently falls back to the reliable elem.style
-		valueIsBorderBox = isBorderBox &&
-			( support.boxSizingReliable() || val === elem.style[ name ] );
-
-		// Normalize "", auto, and prepare for extra
-		val = parseFloat( val ) || 0;
+	// Fall back to offsetWidth/Height when value is "auto"
+	// This happens for inline elements with no explicit setting (gh-3571)
+	if ( val === "auto" ) {
+		val = elem[ "offset" + name[ 0 ].toUpperCase() + name.slice( 1 ) ];
 	}
+
+	// Normalize "", auto, and prepare for extra
+	val = parseFloat( val ) || 0;
 
 	// Use the active box-sizing model to add/subtract irrelevant styles
 	return ( val +
@@ -6814,10 +6824,15 @@ jQuery.extend( {
 		// Make sure that we're working with the right name
 		var ret, type, hooks,
 			origName = jQuery.camelCase( name ),
+			isCustomProp = rcustomProp.test( name ),
 			style = elem.style;
 
-		name = jQuery.cssProps[ origName ] ||
-			( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
+		// Make sure that we're working with the right name. We don't
+		// want to query the value if it is a CSS custom property
+		// since they are user-defined.
+		if ( !isCustomProp ) {
+			name = finalPropName( origName );
+		}
 
 		// Gets hook for the prefixed version, then unprefixed version
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
@@ -6853,7 +6868,11 @@ jQuery.extend( {
 			if ( !hooks || !( "set" in hooks ) ||
 				( value = hooks.set( elem, value, extra ) ) !== undefined ) {
 
-				style[ name ] = value;
+				if ( isCustomProp ) {
+					style.setProperty( name, value );
+				} else {
+					style[ name ] = value;
+				}
 			}
 
 		} else {
@@ -6872,11 +6891,15 @@ jQuery.extend( {
 
 	css: function( elem, name, extra, styles ) {
 		var val, num, hooks,
-			origName = jQuery.camelCase( name );
+			origName = jQuery.camelCase( name ),
+			isCustomProp = rcustomProp.test( name );
 
-		// Make sure that we're working with the right name
-		name = jQuery.cssProps[ origName ] ||
-			( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
+		// Make sure that we're working with the right name. We don't
+		// want to modify the value if it is a CSS custom property
+		// since they are user-defined.
+		if ( !isCustomProp ) {
+			name = finalPropName( origName );
+		}
 
 		// Try prefixed name followed by the unprefixed name
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
@@ -6901,6 +6924,7 @@ jQuery.extend( {
 			num = parseFloat( val );
 			return extra === true || isFinite( num ) ? num || 0 : val;
 		}
+
 		return val;
 	}
 } );
@@ -7000,7 +7024,7 @@ jQuery.fn.extend( {
 				map = {},
 				i = 0;
 
-			if ( jQuery.isArray( name ) ) {
+			if ( Array.isArray( name ) ) {
 				styles = getStyles( elem );
 				len = name.length;
 
@@ -7138,13 +7162,18 @@ jQuery.fx.step = {};
 
 
 var
-	fxNow, timerId,
+	fxNow, inProgress,
 	rfxtypes = /^(?:toggle|show|hide)$/,
 	rrun = /queueHooks$/;
 
-function raf() {
-	if ( timerId ) {
-		window.requestAnimationFrame( raf );
+function schedule() {
+	if ( inProgress ) {
+		if ( document.hidden === false && window.requestAnimationFrame ) {
+			window.requestAnimationFrame( schedule );
+		} else {
+			window.setTimeout( schedule, jQuery.fx.interval );
+		}
+
 		jQuery.fx.tick();
 	}
 }
@@ -7371,7 +7400,7 @@ function propFilter( props, specialEasing ) {
 		name = jQuery.camelCase( index );
 		easing = specialEasing[ name ];
 		value = props[ index ];
-		if ( jQuery.isArray( value ) ) {
+		if ( Array.isArray( value ) ) {
 			easing = value[ 1 ];
 			value = props[ index ] = value[ 0 ];
 		}
@@ -7430,12 +7459,19 @@ function Animation( elem, properties, options ) {
 
 			deferred.notifyWith( elem, [ animation, percent, remaining ] );
 
+			// If there's more to do, yield
 			if ( percent < 1 && length ) {
 				return remaining;
-			} else {
-				deferred.resolveWith( elem, [ animation ] );
-				return false;
 			}
+
+			// If this was an empty animation, synthesize a final progress notification
+			if ( !length ) {
+				deferred.notifyWith( elem, [ animation, 1, 0 ] );
+			}
+
+			// Resolve the animation and report its conclusion
+			deferred.resolveWith( elem, [ animation ] );
+			return false;
 		},
 		animation = deferred.promise( {
 			elem: elem,
@@ -7500,6 +7536,13 @@ function Animation( elem, properties, options ) {
 		animation.opts.start.call( elem, animation );
 	}
 
+	// Attach callbacks from options
+	animation
+		.progress( animation.opts.progress )
+		.done( animation.opts.done, animation.opts.complete )
+		.fail( animation.opts.fail )
+		.always( animation.opts.always );
+
 	jQuery.fx.timer(
 		jQuery.extend( tick, {
 			elem: elem,
@@ -7508,11 +7551,7 @@ function Animation( elem, properties, options ) {
 		} )
 	);
 
-	// attach callbacks from options
-	return animation.progress( animation.opts.progress )
-		.done( animation.opts.done, animation.opts.complete )
-		.fail( animation.opts.fail )
-		.always( animation.opts.always );
+	return animation;
 }
 
 jQuery.Animation = jQuery.extend( Animation, {
@@ -7563,8 +7602,8 @@ jQuery.speed = function( speed, easing, fn ) {
 		easing: fn && easing || easing && !jQuery.isFunction( easing ) && easing
 	};
 
-	// Go to the end state if fx are off or if document is hidden
-	if ( jQuery.fx.off || document.hidden ) {
+	// Go to the end state if fx are off
+	if ( jQuery.fx.off ) {
 		opt.duration = 0;
 
 	} else {
@@ -7756,7 +7795,7 @@ jQuery.fx.tick = function() {
 	for ( ; i < timers.length; i++ ) {
 		timer = timers[ i ];
 
-		// Checks the timer has not already been removed
+		// Run the timer and safely remove it when done (allowing for external removal)
 		if ( !timer() && timers[ i ] === timer ) {
 			timers.splice( i--, 1 );
 		}
@@ -7770,30 +7809,21 @@ jQuery.fx.tick = function() {
 
 jQuery.fx.timer = function( timer ) {
 	jQuery.timers.push( timer );
-	if ( timer() ) {
-		jQuery.fx.start();
-	} else {
-		jQuery.timers.pop();
-	}
+	jQuery.fx.start();
 };
 
 jQuery.fx.interval = 13;
 jQuery.fx.start = function() {
-	if ( !timerId ) {
-		timerId = window.requestAnimationFrame ?
-			window.requestAnimationFrame( raf ) :
-			window.setInterval( jQuery.fx.tick, jQuery.fx.interval );
+	if ( inProgress ) {
+		return;
 	}
+
+	inProgress = true;
+	schedule();
 };
 
 jQuery.fx.stop = function() {
-	if ( window.cancelAnimationFrame ) {
-		window.cancelAnimationFrame( timerId );
-	} else {
-		window.clearInterval( timerId );
-	}
-
-	timerId = null;
+	inProgress = null;
 };
 
 jQuery.fx.speeds = {
@@ -7910,7 +7940,7 @@ jQuery.extend( {
 		type: {
 			set: function( elem, value ) {
 				if ( !support.radioValue && value === "radio" &&
-					jQuery.nodeName( elem, "input" ) ) {
+					nodeName( elem, "input" ) ) {
 					var val = elem.value;
 					elem.setAttribute( "type", value );
 					if ( val ) {
@@ -8341,7 +8371,7 @@ jQuery.fn.extend( {
 			} else if ( typeof val === "number" ) {
 				val += "";
 
-			} else if ( jQuery.isArray( val ) ) {
+			} else if ( Array.isArray( val ) ) {
 				val = jQuery.map( val, function( value ) {
 					return value == null ? "" : value + "";
 				} );
@@ -8400,7 +8430,7 @@ jQuery.extend( {
 							// Don't return options that are disabled or in a disabled optgroup
 							!option.disabled &&
 							( !option.parentNode.disabled ||
-								!jQuery.nodeName( option.parentNode, "optgroup" ) ) ) {
+								!nodeName( option.parentNode, "optgroup" ) ) ) {
 
 						// Get the specific value for the option
 						value = jQuery( option ).val();
@@ -8452,7 +8482,7 @@ jQuery.extend( {
 jQuery.each( [ "radio", "checkbox" ], function() {
 	jQuery.valHooks[ this ] = {
 		set: function( elem, value ) {
-			if ( jQuery.isArray( value ) ) {
+			if ( Array.isArray( value ) ) {
 				return ( elem.checked = jQuery.inArray( jQuery( elem ).val(), value ) > -1 );
 			}
 		}
@@ -8747,7 +8777,7 @@ var
 function buildParams( prefix, obj, traditional, add ) {
 	var name;
 
-	if ( jQuery.isArray( obj ) ) {
+	if ( Array.isArray( obj ) ) {
 
 		// Serialize array item.
 		jQuery.each( obj, function( i, v ) {
@@ -8799,7 +8829,7 @@ jQuery.param = function( a, traditional ) {
 		};
 
 	// If an array was passed in, assume that it is an array of form elements.
-	if ( jQuery.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
+	if ( Array.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
 
 		// Serialize the form elements
 		jQuery.each( a, function() {
@@ -8845,7 +8875,7 @@ jQuery.fn.extend( {
 				return null;
 			}
 
-			if ( jQuery.isArray( val ) ) {
+			if ( Array.isArray( val ) ) {
 				return jQuery.map( val, function( val ) {
 					return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
 				} );
@@ -10270,13 +10300,6 @@ jQuery.expr.pseudos.animated = function( elem ) {
 
 
 
-/**
- * Gets a window from an element
- */
-function getWindow( elem ) {
-	return jQuery.isWindow( elem ) ? elem : elem.nodeType === 9 && elem.defaultView;
-}
-
 jQuery.offset = {
 	setOffset: function( elem, options, i ) {
 		var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition,
@@ -10341,13 +10364,14 @@ jQuery.fn.extend( {
 				} );
 		}
 
-		var docElem, win, rect, doc,
+		var doc, docElem, rect, win,
 			elem = this[ 0 ];
 
 		if ( !elem ) {
 			return;
 		}
 
+		// Return zeros for disconnected and hidden (display: none) elements (gh-2310)
 		// Support: IE <=11 only
 		// Running getBoundingClientRect on a
 		// disconnected node in IE throws an error
@@ -10357,20 +10381,14 @@ jQuery.fn.extend( {
 
 		rect = elem.getBoundingClientRect();
 
-		// Make sure element is not hidden (display: none)
-		if ( rect.width || rect.height ) {
-			doc = elem.ownerDocument;
-			win = getWindow( doc );
-			docElem = doc.documentElement;
+		doc = elem.ownerDocument;
+		docElem = doc.documentElement;
+		win = doc.defaultView;
 
-			return {
-				top: rect.top + win.pageYOffset - docElem.clientTop,
-				left: rect.left + win.pageXOffset - docElem.clientLeft
-			};
-		}
-
-		// Return zeros for disconnected and hidden elements (gh-2310)
-		return rect;
+		return {
+			top: rect.top + win.pageYOffset - docElem.clientTop,
+			left: rect.left + win.pageXOffset - docElem.clientLeft
+		};
 	},
 
 	position: function() {
@@ -10396,7 +10414,7 @@ jQuery.fn.extend( {
 
 			// Get correct offsets
 			offset = this.offset();
-			if ( !jQuery.nodeName( offsetParent[ 0 ], "html" ) ) {
+			if ( !nodeName( offsetParent[ 0 ], "html" ) ) {
 				parentOffset = offsetParent.offset();
 			}
 
@@ -10443,7 +10461,14 @@ jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( 
 
 	jQuery.fn[ method ] = function( val ) {
 		return access( this, function( elem, method, val ) {
-			var win = getWindow( elem );
+
+			// Coalesce documents and windows
+			var win;
+			if ( jQuery.isWindow( elem ) ) {
+				win = elem;
+			} else if ( elem.nodeType === 9 ) {
+				win = elem.defaultView;
+			}
 
 			if ( val === undefined ) {
 				return win ? win[ prop ] : elem[ method ];
@@ -10552,7 +10577,16 @@ jQuery.fn.extend( {
 	}
 } );
 
+jQuery.holdReady = function( hold ) {
+	if ( hold ) {
+		jQuery.readyWait++;
+	} else {
+		jQuery.ready( true );
+	}
+};
+jQuery.isArray = Array.isArray;
 jQuery.parseJSON = JSON.parse;
+jQuery.nodeName = nodeName;
 
 
 
@@ -10606,7 +10640,6 @@ jQuery.noConflict = function( deep ) {
 if ( !noGlobal ) {
 	window.jQuery = window.$ = jQuery;
 }
-
 
 
 
@@ -10672,6 +10705,10 @@ var _LocalstorageManager = __webpack_require__(23);
 
 var _LocalstorageManager2 = _interopRequireDefault(_LocalstorageManager);
 
+var _exifDataManager = __webpack_require__(52);
+
+var _exifDataManager2 = _interopRequireDefault(_exifDataManager);
+
 var _userInfo = __webpack_require__(25);
 
 var _userInfo2 = _interopRequireDefault(_userInfo);
@@ -10701,6 +10738,10 @@ app.component('logIn', _login2.default);
 app.service('localstorageManager', _LocalstorageManager2.default);
 
 app.service('userInfo', _userInfo2.default);
+
+app.factory('exifDataManager', function () {
+    return new _exifDataManager2.default();
+});
 
 app.factory('mapManager', function () {
     return new _mapManager2.default('#googleMap', coord);
@@ -49133,827 +49174,7 @@ NavbarController.$inject = ['userInfo'];
 exports.default = NavbarController;
 
 /***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var debug = false;
-
-var root = undefined;
-
-var EXIF = function EXIF(obj) {
-    if (obj instanceof EXIF) return obj;
-    if (!(this instanceof EXIF)) return new EXIF(obj);
-    this.EXIFwrapped = obj;
-};
-
-if (true) {
-    if (typeof module !== 'undefined' && module.exports) {
-        exports = module.exports = EXIF;
-    }
-    exports.EXIF = EXIF;
-} else {
-    root.EXIF = EXIF;
-}
-
-var ExifTags = EXIF.Tags = {
-
-    // version tags
-    0x9000: "ExifVersion", // EXIF version
-    0xA000: "FlashpixVersion", // Flashpix format version
-
-    // colorspace tags
-    0xA001: "ColorSpace", // Color space information tag
-
-    // image configuration
-    0xA002: "PixelXDimension", // Valid width of meaningful image
-    0xA003: "PixelYDimension", // Valid height of meaningful image
-    0x9101: "ComponentsConfiguration", // Information about channels
-    0x9102: "CompressedBitsPerPixel", // Compressed bits per pixel
-
-    // user information
-    0x927C: "MakerNote", // Any desired information written by the manufacturer
-    0x9286: "UserComment", // Comments by user
-
-    // related file
-    0xA004: "RelatedSoundFile", // Name of related sound file
-
-    // date and time
-    0x9003: "DateTimeOriginal", // Date and time when the original image was generated
-    0x9004: "DateTimeDigitized", // Date and time when the image was stored digitally
-    0x9290: "SubsecTime", // Fractions of seconds for DateTime
-    0x9291: "SubsecTimeOriginal", // Fractions of seconds for DateTimeOriginal
-    0x9292: "SubsecTimeDigitized", // Fractions of seconds for DateTimeDigitized
-
-    // picture-taking conditions
-    0x829A: "ExposureTime", // Exposure time (in seconds)
-    0x829D: "FNumber", // F number
-    0x8822: "ExposureProgram", // Exposure program
-    0x8824: "SpectralSensitivity", // Spectral sensitivity
-    0x8827: "ISOSpeedRatings", // ISO speed rating
-    0x8828: "OECF", // Optoelectric conversion factor
-    0x9201: "ShutterSpeedValue", // Shutter speed
-    0x9202: "ApertureValue", // Lens aperture
-    0x9203: "BrightnessValue", // Value of brightness
-    0x9204: "ExposureBias", // Exposure bias
-    0x9205: "MaxApertureValue", // Smallest F number of lens
-    0x9206: "SubjectDistance", // Distance to subject in meters
-    0x9207: "MeteringMode", // Metering mode
-    0x9208: "LightSource", // Kind of light source
-    0x9209: "Flash", // Flash status
-    0x9214: "SubjectArea", // Location and area of main subject
-    0x920A: "FocalLength", // Focal length of the lens in mm
-    0xA20B: "FlashEnergy", // Strobe energy in BCPS
-    0xA20C: "SpatialFrequencyResponse", //
-    0xA20E: "FocalPlaneXResolution", // Number of pixels in width direction per FocalPlaneResolutionUnit
-    0xA20F: "FocalPlaneYResolution", // Number of pixels in height direction per FocalPlaneResolutionUnit
-    0xA210: "FocalPlaneResolutionUnit", // Unit for measuring FocalPlaneXResolution and FocalPlaneYResolution
-    0xA214: "SubjectLocation", // Location of subject in image
-    0xA215: "ExposureIndex", // Exposure index selected on camera
-    0xA217: "SensingMethod", // Image sensor type
-    0xA300: "FileSource", // Image source (3 == DSC)
-    0xA301: "SceneType", // Scene type (1 == directly photographed)
-    0xA302: "CFAPattern", // Color filter array geometric pattern
-    0xA401: "CustomRendered", // Special processing
-    0xA402: "ExposureMode", // Exposure mode
-    0xA403: "WhiteBalance", // 1 = auto white balance, 2 = manual
-    0xA404: "DigitalZoomRation", // Digital zoom ratio
-    0xA405: "FocalLengthIn35mmFilm", // Equivalent foacl length assuming 35mm film camera (in mm)
-    0xA406: "SceneCaptureType", // Type of scene
-    0xA407: "GainControl", // Degree of overall image gain adjustment
-    0xA408: "Contrast", // Direction of contrast processing applied by camera
-    0xA409: "Saturation", // Direction of saturation processing applied by camera
-    0xA40A: "Sharpness", // Direction of sharpness processing applied by camera
-    0xA40B: "DeviceSettingDescription", //
-    0xA40C: "SubjectDistanceRange", // Distance to subject
-
-    // other tags
-    0xA005: "InteroperabilityIFDPointer",
-    0xA420: "ImageUniqueID" // Identifier assigned uniquely to each image
-};
-
-var TiffTags = EXIF.TiffTags = {
-    0x0100: "ImageWidth",
-    0x0101: "ImageHeight",
-    0x8769: "ExifIFDPointer",
-    0x8825: "GPSInfoIFDPointer",
-    0xA005: "InteroperabilityIFDPointer",
-    0x0102: "BitsPerSample",
-    0x0103: "Compression",
-    0x0106: "PhotometricInterpretation",
-    0x0112: "Orientation",
-    0x0115: "SamplesPerPixel",
-    0x011C: "PlanarConfiguration",
-    0x0212: "YCbCrSubSampling",
-    0x0213: "YCbCrPositioning",
-    0x011A: "XResolution",
-    0x011B: "YResolution",
-    0x0128: "ResolutionUnit",
-    0x0111: "StripOffsets",
-    0x0116: "RowsPerStrip",
-    0x0117: "StripByteCounts",
-    0x0201: "JPEGInterchangeFormat",
-    0x0202: "JPEGInterchangeFormatLength",
-    0x012D: "TransferFunction",
-    0x013E: "WhitePoint",
-    0x013F: "PrimaryChromaticities",
-    0x0211: "YCbCrCoefficients",
-    0x0214: "ReferenceBlackWhite",
-    0x0132: "DateTime",
-    0x010E: "ImageDescription",
-    0x010F: "Make",
-    0x0110: "Model",
-    0x0131: "Software",
-    0x013B: "Artist",
-    0x8298: "Copyright"
-};
-
-var GPSTags = EXIF.GPSTags = {
-    0x0000: "GPSVersionID",
-    0x0001: "GPSLatitudeRef",
-    0x0002: "GPSLatitude",
-    0x0003: "GPSLongitudeRef",
-    0x0004: "GPSLongitude",
-    0x0005: "GPSAltitudeRef",
-    0x0006: "GPSAltitude",
-    0x0007: "GPSTimeStamp",
-    0x0008: "GPSSatellites",
-    0x0009: "GPSStatus",
-    0x000A: "GPSMeasureMode",
-    0x000B: "GPSDOP",
-    0x000C: "GPSSpeedRef",
-    0x000D: "GPSSpeed",
-    0x000E: "GPSTrackRef",
-    0x000F: "GPSTrack",
-    0x0010: "GPSImgDirectionRef",
-    0x0011: "GPSImgDirection",
-    0x0012: "GPSMapDatum",
-    0x0013: "GPSDestLatitudeRef",
-    0x0014: "GPSDestLatitude",
-    0x0015: "GPSDestLongitudeRef",
-    0x0016: "GPSDestLongitude",
-    0x0017: "GPSDestBearingRef",
-    0x0018: "GPSDestBearing",
-    0x0019: "GPSDestDistanceRef",
-    0x001A: "GPSDestDistance",
-    0x001B: "GPSProcessingMethod",
-    0x001C: "GPSAreaInformation",
-    0x001D: "GPSDateStamp",
-    0x001E: "GPSDifferential"
-};
-
-var StringValues = EXIF.StringValues = {
-    ExposureProgram: {
-        0: "Not defined",
-        1: "Manual",
-        2: "Normal program",
-        3: "Aperture priority",
-        4: "Shutter priority",
-        5: "Creative program",
-        6: "Action program",
-        7: "Portrait mode",
-        8: "Landscape mode"
-    },
-    MeteringMode: {
-        0: "Unknown",
-        1: "Average",
-        2: "CenterWeightedAverage",
-        3: "Spot",
-        4: "MultiSpot",
-        5: "Pattern",
-        6: "Partial",
-        255: "Other"
-    },
-    LightSource: {
-        0: "Unknown",
-        1: "Daylight",
-        2: "Fluorescent",
-        3: "Tungsten (incandescent light)",
-        4: "Flash",
-        9: "Fine weather",
-        10: "Cloudy weather",
-        11: "Shade",
-        12: "Daylight fluorescent (D 5700 - 7100K)",
-        13: "Day white fluorescent (N 4600 - 5400K)",
-        14: "Cool white fluorescent (W 3900 - 4500K)",
-        15: "White fluorescent (WW 3200 - 3700K)",
-        17: "Standard light A",
-        18: "Standard light B",
-        19: "Standard light C",
-        20: "D55",
-        21: "D65",
-        22: "D75",
-        23: "D50",
-        24: "ISO studio tungsten",
-        255: "Other"
-    },
-    Flash: {
-        0x0000: "Flash did not fire",
-        0x0001: "Flash fired",
-        0x0005: "Strobe return light not detected",
-        0x0007: "Strobe return light detected",
-        0x0009: "Flash fired, compulsory flash mode",
-        0x000D: "Flash fired, compulsory flash mode, return light not detected",
-        0x000F: "Flash fired, compulsory flash mode, return light detected",
-        0x0010: "Flash did not fire, compulsory flash mode",
-        0x0018: "Flash did not fire, auto mode",
-        0x0019: "Flash fired, auto mode",
-        0x001D: "Flash fired, auto mode, return light not detected",
-        0x001F: "Flash fired, auto mode, return light detected",
-        0x0020: "No flash function",
-        0x0041: "Flash fired, red-eye reduction mode",
-        0x0045: "Flash fired, red-eye reduction mode, return light not detected",
-        0x0047: "Flash fired, red-eye reduction mode, return light detected",
-        0x0049: "Flash fired, compulsory flash mode, red-eye reduction mode",
-        0x004D: "Flash fired, compulsory flash mode, red-eye reduction mode, return light not detected",
-        0x004F: "Flash fired, compulsory flash mode, red-eye reduction mode, return light detected",
-        0x0059: "Flash fired, auto mode, red-eye reduction mode",
-        0x005D: "Flash fired, auto mode, return light not detected, red-eye reduction mode",
-        0x005F: "Flash fired, auto mode, return light detected, red-eye reduction mode"
-    },
-    SensingMethod: {
-        1: "Not defined",
-        2: "One-chip color area sensor",
-        3: "Two-chip color area sensor",
-        4: "Three-chip color area sensor",
-        5: "Color sequential area sensor",
-        7: "Trilinear sensor",
-        8: "Color sequential linear sensor"
-    },
-    SceneCaptureType: {
-        0: "Standard",
-        1: "Landscape",
-        2: "Portrait",
-        3: "Night scene"
-    },
-    SceneType: {
-        1: "Directly photographed"
-    },
-    CustomRendered: {
-        0: "Normal process",
-        1: "Custom process"
-    },
-    WhiteBalance: {
-        0: "Auto white balance",
-        1: "Manual white balance"
-    },
-    GainControl: {
-        0: "None",
-        1: "Low gain up",
-        2: "High gain up",
-        3: "Low gain down",
-        4: "High gain down"
-    },
-    Contrast: {
-        0: "Normal",
-        1: "Soft",
-        2: "Hard"
-    },
-    Saturation: {
-        0: "Normal",
-        1: "Low saturation",
-        2: "High saturation"
-    },
-    Sharpness: {
-        0: "Normal",
-        1: "Soft",
-        2: "Hard"
-    },
-    SubjectDistanceRange: {
-        0: "Unknown",
-        1: "Macro",
-        2: "Close view",
-        3: "Distant view"
-    },
-    FileSource: {
-        3: "DSC"
-    },
-
-    Components: {
-        0: "",
-        1: "Y",
-        2: "Cb",
-        3: "Cr",
-        4: "R",
-        5: "G",
-        6: "B"
-    }
-};
-
-function addEvent(element, event, handler) {
-    if (element.addEventListener) {
-        element.addEventListener(event, handler, false);
-    } else if (element.attachEvent) {
-        element.attachEvent("on" + event, handler);
-    }
-}
-
-function imageHasData(img) {
-    return !!img.exifdata;
-}
-
-function base64ToArrayBuffer(base64, contentType) {
-    contentType = contentType || base64.match(/^data\:([^\;]+)\;base64,/mi)[1] || ''; // e.g. 'data:image/jpeg;base64,...' => 'image/jpeg'
-    base64 = base64.replace(/^data\:([^\;]+)\;base64,/gmi, '');
-    var binary = atob(base64);
-    var len = binary.length;
-    var buffer = new ArrayBuffer(len);
-    var view = new Uint8Array(buffer);
-    for (var i = 0; i < len; i++) {
-        view[i] = binary.charCodeAt(i);
-    }
-    return buffer;
-}
-
-function objectURLToBlob(url, callback) {
-    var http = new XMLHttpRequest();
-    http.open("GET", url, true);
-    http.responseType = "blob";
-    http.onload = function (e) {
-        if (this.status == 200 || this.status === 0) {
-            callback(this.response);
-        }
-    };
-    http.send();
-}
-
-function getImageData(img, callback) {
-    function handleBinaryFile(binFile) {
-        var data = findEXIFinJPEG(binFile);
-        var iptcdata = findIPTCinJPEG(binFile);
-        img.exifdata = data || {};
-        img.iptcdata = iptcdata || {};
-        if (callback) {
-            callback.call(img);
-        }
-    }
-
-    if (img.src) {
-        if (/^data\:/i.test(img.src)) {
-            // Data URI
-            var arrayBuffer = base64ToArrayBuffer(img.src);
-            handleBinaryFile(arrayBuffer);
-        } else if (/^blob\:/i.test(img.src)) {
-            // Object URL
-            var fileReader = new FileReader();
-            fileReader.onload = function (e) {
-                handleBinaryFile(e.target.result);
-            };
-            objectURLToBlob(img.src, function (blob) {
-                fileReader.readAsArrayBuffer(blob);
-            });
-        } else {
-            var http = new XMLHttpRequest();
-            http.onload = function () {
-                if (this.status == 200 || this.status === 0) {
-                    handleBinaryFile(http.response);
-                } else {
-                    throw "Could not load image";
-                }
-                http = null;
-            };
-            http.open("GET", img.src, true);
-            http.responseType = "arraybuffer";
-            http.send(null);
-        }
-    } else if (window.FileReader && (img instanceof window.Blob || img instanceof window.File)) {
-        var fileReader = new FileReader();
-        fileReader.onload = function (e) {
-            if (debug) console.log("Got file of length " + e.target.result.byteLength);
-            handleBinaryFile(e.target.result);
-        };
-
-        fileReader.readAsArrayBuffer(img);
-    }
-}
-
-function findEXIFinJPEG(file) {
-    var dataView = new DataView(file);
-
-    if (debug) console.log("Got file of length " + file.byteLength);
-    if (dataView.getUint8(0) != 0xFF || dataView.getUint8(1) != 0xD8) {
-        if (debug) console.log("Not a valid JPEG");
-        return false; // not a valid jpeg
-    }
-
-    var offset = 2,
-        length = file.byteLength,
-        marker;
-
-    while (offset < length) {
-        if (dataView.getUint8(offset) != 0xFF) {
-            if (debug) console.log("Not a valid marker at offset " + offset + ", found: " + dataView.getUint8(offset));
-            return false; // not a valid marker, something is wrong
-        }
-
-        marker = dataView.getUint8(offset + 1);
-        if (debug) console.log(marker);
-
-        // we could implement handling for other markers here,
-        // but we're only looking for 0xFFE1 for EXIF data
-
-        if (marker == 225) {
-            if (debug) console.log("Found 0xFFE1 marker");
-
-            return readEXIFData(dataView, offset + 4, dataView.getUint16(offset + 2) - 2);
-
-            // offset += 2 + file.getShortAt(offset+2, true);
-        } else {
-            offset += 2 + dataView.getUint16(offset + 2);
-        }
-    }
-}
-
-function findIPTCinJPEG(file) {
-    var dataView = new DataView(file);
-
-    if (debug) console.log("Got file of length " + file.byteLength);
-    if (dataView.getUint8(0) != 0xFF || dataView.getUint8(1) != 0xD8) {
-        if (debug) console.log("Not a valid JPEG");
-        return false; // not a valid jpeg
-    }
-
-    var offset = 2,
-        length = file.byteLength;
-
-    var isFieldSegmentStart = function isFieldSegmentStart(dataView, offset) {
-        return dataView.getUint8(offset) === 0x38 && dataView.getUint8(offset + 1) === 0x42 && dataView.getUint8(offset + 2) === 0x49 && dataView.getUint8(offset + 3) === 0x4D && dataView.getUint8(offset + 4) === 0x04 && dataView.getUint8(offset + 5) === 0x04;
-    };
-
-    while (offset < length) {
-
-        if (isFieldSegmentStart(dataView, offset)) {
-
-            // Get the length of the name header (which is padded to an even number of bytes)
-            var nameHeaderLength = dataView.getUint8(offset + 7);
-            if (nameHeaderLength % 2 !== 0) nameHeaderLength += 1;
-            // Check for pre photoshop 6 format
-            if (nameHeaderLength === 0) {
-                // Always 4
-                nameHeaderLength = 4;
-            }
-
-            var startOffset = offset + 8 + nameHeaderLength;
-            var sectionLength = dataView.getUint16(offset + 6 + nameHeaderLength);
-
-            return readIPTCData(file, startOffset, sectionLength);
-
-            break;
-        }
-
-        // Not the marker, continue searching
-        offset++;
-    }
-}
-var IptcFieldMap = {
-    0x78: 'caption',
-    0x6E: 'credit',
-    0x19: 'keywords',
-    0x37: 'dateCreated',
-    0x50: 'byline',
-    0x55: 'bylineTitle',
-    0x7A: 'captionWriter',
-    0x69: 'headline',
-    0x74: 'copyright',
-    0x0F: 'category'
-};
-function readIPTCData(file, startOffset, sectionLength) {
-    var dataView = new DataView(file);
-    var data = {};
-    var fieldValue, fieldName, dataSize, segmentType, segmentSize;
-    var segmentStartPos = startOffset;
-    while (segmentStartPos < startOffset + sectionLength) {
-        if (dataView.getUint8(segmentStartPos) === 0x1C && dataView.getUint8(segmentStartPos + 1) === 0x02) {
-            segmentType = dataView.getUint8(segmentStartPos + 2);
-            if (segmentType in IptcFieldMap) {
-                dataSize = dataView.getInt16(segmentStartPos + 3);
-                segmentSize = dataSize + 5;
-                fieldName = IptcFieldMap[segmentType];
-                fieldValue = getStringFromDB(dataView, segmentStartPos + 5, dataSize);
-                // Check if we already stored a value with this name
-                if (data.hasOwnProperty(fieldName)) {
-                    // Value already stored with this name, create multivalue field
-                    if (data[fieldName] instanceof Array) {
-                        data[fieldName].push(fieldValue);
-                    } else {
-                        data[fieldName] = [data[fieldName], fieldValue];
-                    }
-                } else {
-                    data[fieldName] = fieldValue;
-                }
-            }
-        }
-        segmentStartPos++;
-    }
-    return data;
-}
-
-function readTags(file, tiffStart, dirStart, strings, bigEnd) {
-    var entries = file.getUint16(dirStart, !bigEnd),
-        tags = {},
-        entryOffset,
-        tag,
-        i;
-
-    for (i = 0; i < entries; i++) {
-        entryOffset = dirStart + i * 12 + 2;
-        tag = strings[file.getUint16(entryOffset, !bigEnd)];
-        if (!tag && debug) console.log("Unknown tag: " + file.getUint16(entryOffset, !bigEnd));
-        tags[tag] = readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd);
-    }
-    return tags;
-}
-
-function readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd) {
-    var type = file.getUint16(entryOffset + 2, !bigEnd),
-        numValues = file.getUint32(entryOffset + 4, !bigEnd),
-        valueOffset = file.getUint32(entryOffset + 8, !bigEnd) + tiffStart,
-        offset,
-        vals,
-        val,
-        n,
-        numerator,
-        denominator;
-
-    switch (type) {
-        case 1: // byte, 8-bit unsigned int
-        case 7:
-            // undefined, 8-bit byte, value depending on field
-            if (numValues == 1) {
-                return file.getUint8(entryOffset + 8, !bigEnd);
-            } else {
-                offset = numValues > 4 ? valueOffset : entryOffset + 8;
-                vals = [];
-                for (n = 0; n < numValues; n++) {
-                    vals[n] = file.getUint8(offset + n);
-                }
-                return vals;
-            }
-
-        case 2:
-            // ascii, 8-bit byte
-            offset = numValues > 4 ? valueOffset : entryOffset + 8;
-            return getStringFromDB(file, offset, numValues - 1);
-
-        case 3:
-            // short, 16 bit int
-            if (numValues == 1) {
-                return file.getUint16(entryOffset + 8, !bigEnd);
-            } else {
-                offset = numValues > 2 ? valueOffset : entryOffset + 8;
-                vals = [];
-                for (n = 0; n < numValues; n++) {
-                    vals[n] = file.getUint16(offset + 2 * n, !bigEnd);
-                }
-                return vals;
-            }
-
-        case 4:
-            // long, 32 bit int
-            if (numValues == 1) {
-                return file.getUint32(entryOffset + 8, !bigEnd);
-            } else {
-                vals = [];
-                for (n = 0; n < numValues; n++) {
-                    vals[n] = file.getUint32(valueOffset + 4 * n, !bigEnd);
-                }
-                return vals;
-            }
-
-        case 5:
-            // rational = two long values, first is numerator, second is denominator
-            if (numValues == 1) {
-                numerator = file.getUint32(valueOffset, !bigEnd);
-                denominator = file.getUint32(valueOffset + 4, !bigEnd);
-                val = new Number(numerator / denominator);
-                val.numerator = numerator;
-                val.denominator = denominator;
-                return val;
-            } else {
-                vals = [];
-                for (n = 0; n < numValues; n++) {
-                    numerator = file.getUint32(valueOffset + 8 * n, !bigEnd);
-                    denominator = file.getUint32(valueOffset + 4 + 8 * n, !bigEnd);
-                    vals[n] = new Number(numerator / denominator);
-                    vals[n].numerator = numerator;
-                    vals[n].denominator = denominator;
-                }
-                return vals;
-            }
-
-        case 9:
-            // slong, 32 bit signed int
-            if (numValues == 1) {
-                return file.getInt32(entryOffset + 8, !bigEnd);
-            } else {
-                vals = [];
-                for (n = 0; n < numValues; n++) {
-                    vals[n] = file.getInt32(valueOffset + 4 * n, !bigEnd);
-                }
-                return vals;
-            }
-
-        case 10:
-            // signed rational, two slongs, first is numerator, second is denominator
-            if (numValues == 1) {
-                return file.getInt32(valueOffset, !bigEnd) / file.getInt32(valueOffset + 4, !bigEnd);
-            } else {
-                vals = [];
-                for (n = 0; n < numValues; n++) {
-                    vals[n] = file.getInt32(valueOffset + 8 * n, !bigEnd) / file.getInt32(valueOffset + 4 + 8 * n, !bigEnd);
-                }
-                return vals;
-            }
-    }
-}
-
-function getStringFromDB(buffer, start, length) {
-    var outstr = "";
-    for (n = start; n < start + length; n++) {
-        outstr += String.fromCharCode(buffer.getUint8(n));
-    }
-    return outstr;
-}
-
-function readEXIFData(file, start) {
-    if (getStringFromDB(file, start, 4) != "Exif") {
-        if (debug) console.log("Not valid EXIF data! " + getStringFromDB(file, start, 4));
-        return false;
-    }
-
-    var bigEnd,
-        tags,
-        tag,
-        exifData,
-        gpsData,
-        tiffOffset = start + 6;
-
-    // test for TIFF validity and endianness
-    if (file.getUint16(tiffOffset) == 0x4949) {
-        bigEnd = false;
-    } else if (file.getUint16(tiffOffset) == 0x4D4D) {
-        bigEnd = true;
-    } else {
-        if (debug) console.log("Not valid TIFF data! (no 0x4949 or 0x4D4D)");
-        return false;
-    }
-
-    if (file.getUint16(tiffOffset + 2, !bigEnd) != 0x002A) {
-        if (debug) console.log("Not valid TIFF data! (no 0x002A)");
-        return false;
-    }
-
-    var firstIFDOffset = file.getUint32(tiffOffset + 4, !bigEnd);
-
-    if (firstIFDOffset < 0x00000008) {
-        if (debug) console.log("Not valid TIFF data! (First offset less than 8)", file.getUint32(tiffOffset + 4, !bigEnd));
-        return false;
-    }
-
-    tags = readTags(file, tiffOffset, tiffOffset + firstIFDOffset, TiffTags, bigEnd);
-
-    if (tags.ExifIFDPointer) {
-        exifData = readTags(file, tiffOffset, tiffOffset + tags.ExifIFDPointer, ExifTags, bigEnd);
-        for (tag in exifData) {
-            switch (tag) {
-                case "LightSource":
-                case "Flash":
-                case "MeteringMode":
-                case "ExposureProgram":
-                case "SensingMethod":
-                case "SceneCaptureType":
-                case "SceneType":
-                case "CustomRendered":
-                case "WhiteBalance":
-                case "GainControl":
-                case "Contrast":
-                case "Saturation":
-                case "Sharpness":
-                case "SubjectDistanceRange":
-                case "FileSource":
-                    exifData[tag] = StringValues[tag][exifData[tag]];
-                    break;
-
-                case "ExifVersion":
-                case "FlashpixVersion":
-                    exifData[tag] = String.fromCharCode(exifData[tag][0], exifData[tag][1], exifData[tag][2], exifData[tag][3]);
-                    break;
-
-                case "ComponentsConfiguration":
-                    exifData[tag] = StringValues.Components[exifData[tag][0]] + StringValues.Components[exifData[tag][1]] + StringValues.Components[exifData[tag][2]] + StringValues.Components[exifData[tag][3]];
-                    break;
-            }
-            tags[tag] = exifData[tag];
-        }
-    }
-
-    if (tags.GPSInfoIFDPointer) {
-        gpsData = readTags(file, tiffOffset, tiffOffset + tags.GPSInfoIFDPointer, GPSTags, bigEnd);
-        for (tag in gpsData) {
-            switch (tag) {
-                case "GPSVersionID":
-                    gpsData[tag] = gpsData[tag][0] + "." + gpsData[tag][1] + "." + gpsData[tag][2] + "." + gpsData[tag][3];
-                    break;
-            }
-            tags[tag] = gpsData[tag];
-        }
-    }
-
-    return tags;
-}
-
-EXIF.getData = function (img, callback) {
-    if ((img instanceof Image || img instanceof HTMLImageElement) && !img.complete) return false;
-
-    if (!imageHasData(img)) {
-        getImageData(img, callback);
-    } else {
-        if (callback) {
-            callback.call(img);
-        }
-    }
-    return true;
-};
-
-EXIF.getTag = function (img, tag) {
-    if (!imageHasData(img)) return;
-    return img.exifdata[tag];
-};
-
-EXIF.getIptcTag = function (img, tag) {
-    if (!imageHasData(img)) return;
-    return img.iptcdata[tag];
-};
-
-EXIF.getAllTags = function (img) {
-    if (!imageHasData(img)) return {};
-    var a,
-        data = img.exifdata,
-        tags = {};
-    for (a in data) {
-        if (data.hasOwnProperty(a)) {
-            tags[a] = data[a];
-        }
-    }
-    return tags;
-};
-
-EXIF.getAllIptcTags = function (img) {
-    if (!imageHasData(img)) return {};
-    var a,
-        data = img.iptcdata,
-        tags = {};
-    for (a in data) {
-        if (data.hasOwnProperty(a)) {
-            tags[a] = data[a];
-        }
-    }
-    return tags;
-};
-
-EXIF.pretty = function (img) {
-    if (!imageHasData(img)) return "";
-    var a,
-        data = img.exifdata,
-        strPretty = "";
-    for (a in data) {
-        if (data.hasOwnProperty(a)) {
-            if (_typeof(data[a]) == "object") {
-                if (data[a] instanceof Number) {
-                    strPretty += a + " : " + data[a] + " [" + data[a].numerator + "/" + data[a].denominator + "]\r\n";
-                } else {
-                    strPretty += a + " : [" + data[a].length + " values]\r\n";
-                }
-            } else {
-                strPretty += a + " : " + data[a] + "\r\n";
-            }
-        }
-    }
-    return strPretty;
-};
-
-EXIF.readFromBinaryFile = function (file) {
-    return findEXIFinJPEG(file);
-};
-
-if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
-        return EXIF;
-    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}
-
-exports.default = EXIF;
-
-/***/ }),
+/* 18 */,
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49998,49 +49219,49 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(2);
 
-var _exif = __webpack_require__(18);
-
-var _exif2 = _interopRequireDefault(_exif);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function NewImage(src) {
+var FILE_INPUT_SELECTOR = '.file';
+var VIEW_PATH_INPUT_SELECTOR = '.pathToFile';
+var IMAGE_COLLECTION = [];
+
+var NewImage = function NewImage(src) {
+    _classCallCheck(this, NewImage);
+
     this.id = 'img' + Date.now();
     this.img = new Image();
     this.img.src = src;
     this.img.dataset['id'] = this.id;
     this.description = '';
-    //  this.coord = extractGPSData(this.img) || {};
-    // this.exifData = extractExifData(this.img) || "";
-}
+    this.exifData = null;
+    this.coord = {};
+};
 
-var imageCollection = [];
-
-var photoController = function () {
-    function photoController($timeout) {
-        _classCallCheck(this, photoController);
+var PhotoController = function () {
+    function PhotoController($timeout, exifDataManager) {
+        _classCallCheck(this, PhotoController);
 
         this.file;
-        this.imageCollection = imageCollection;
+        this.imageCollection = IMAGE_COLLECTION;
         this.$timeout = $timeout;
+        this.exifDataManager = exifDataManager;
+        this.imageView;
     }
 
-    _createClass(photoController, [{
+    _createClass(PhotoController, [{
         key: 'browse',
         value: function browse() {
             var _this = this;
 
-            $('.file').trigger('click'); //искусственно вызывает клик;
-            $('.file').on('change', function () {
+            $(FILE_INPUT_SELECTOR).trigger('click'); //искусственно вызывает клик;
+            $(FILE_INPUT_SELECTOR).on('change', function () {
                 _this.fileChange();
             });
         }
     }, {
         key: 'fileChange',
         value: function fileChange() {
-            $('.pathToFile').val($('.file').val().replace(/C:\\fakepath\\/i, ''));
+            $(VIEW_PATH_INPUT_SELECTOR).val($(FILE_INPUT_SELECTOR).val().replace(/C:\\fakepath\\/i, ''));
         }
 
         // $('#editInfo').on('click', (e) => {
@@ -50063,11 +49284,18 @@ var photoController = function () {
         // });
 
     }, {
+        key: 'showImage',
+        value: function showImage(el) {
+            console.log('sd');
+            this.imageView = el;
+        }
+    }, {
         key: 'loadFile',
         value: function loadFile() {
-            var file = document.querySelector('.file').files[0];
+            var file = document.querySelector(FILE_INPUT_SELECTOR).files[0];
             this.addFileToCollection(file); //addFileToCollection();
-            $('.file, .pathToFile').val('');
+            $(FILE_INPUT_SELECTOR).val('');
+            $(VIEW_PATH_INPUT_SELECTOR).val('');
         }
     }, {
         key: 'addFileToCollection',
@@ -50080,97 +49308,81 @@ var photoController = function () {
             reader.onloadend = function (event) {
                 that.$timeout(function () {
                     var image = new NewImage(event.target.result);
+                    image.coord = that.exifDataManager.extractGPSData(image.img);
+                    image.exifData = that.exifDataManager.extractExifData(image.img);
                     that.imageCollection.push(image);
                 }, 0);
             };
         }
     }]);
 
-    return photoController;
+    return PhotoController;
 }();
 
 ;
 
-photoController.$inject = ['$timeout'];
+PhotoController.$inject = ['$timeout', 'exifDataManager'];
+exports.default = PhotoController;
 
-function extractGPSData(img) {
-    var result;
-    _exif2.default.getData(img, function () {
-        var yCoord = _exif2.default.getTag(img, 'GPSLongitude') || null;
-        var xCoord = _exif2.default.getTag(img, 'GPSLatitude') || null;
-        result = {
-            x: coordinatesToDecimal(xCoord),
-            y: coordinatesToDecimal(yCoord)
-        };
-    });
-    return result;
-};
+// function showImage(element) {
 
-function extractExifData(img) {
+//     var image = findImage(element);
+//     if (!image) {
+//         return;
+//     }
+//     $(' #mainPicture > img ').attr('ng-src', image.img.src);
+//     $('#mainPicture, h4').removeClass(hiddenClass);
+//     $(exifDataContainer).html(image.exifData);
 
-    var allMetaData = _exif2.default.getAllTags(img);
-    return JSON.stringify(allMetaData, null, "\t");
-};
+//     if (image.coord.x && image.coord.y && !map) {
+//         map = new Map(mapSelector, image.coord);
+//         $(mapSelector).removeClass(hiddenClass);
+//         map.changeMapCoord(image.coord);
+//     }
+//     else if (image.coord.x && image.coord.y && map) {
+//         map.changeMapCoord(image.coord);
+//         $(mapSelector).removeClass(hiddenClass);
+//     }
+//     else {
+//         $(mapSelector).addClass(hiddenClass);
+//     }
 
-function coordinatesToDecimal(number) {
-    if (number) {
-        return number[0].numerator + number[1].numerator / (60 * number[1].denominator) + number[2].numerator / (3600 * number[2].denominator);
-    }
-    return;
-};
+// }
 
-function showImage(element) {
 
-    var image = findImage(element);
-    if (!image) {
-        return;
-    }
-    $(' #mainPicture > img ').attr('ng-src', image.img.src);
-    $('#mainPicture, h4').removeClass(hiddenClass);
-    $(exifDataContainer).html(image.exifData);
+//     function findImage(element) {
+//         var key = element.dataset.id;
+//         return key ? imageCollection.get(key) : null;
+//     }
 
-    if (image.coord.x && image.coord.y && !map) {
-        map = new Map(mapSelector, image.coord);
-        $(mapSelector).removeClass(hiddenClass);
-        map.changeMapCoord(image.coord);
-    } else if (image.coord.x && image.coord.y && map) {
-        map.changeMapCoord(image.coord);
-        $(mapSelector).removeClass(hiddenClass);
-    } else {
-        $(mapSelector).addClass(hiddenClass);
-    }
-}
 
-function findImage(element) {
-    var key = element.dataset.id;
-    return key ? imageCollection.get(key) : null;
-}
+//     function addDescriptionData(event) {
 
-function addDescriptionData(event) {};
+//     };
 
-function createImage(event) {
-    var image = new NewImage(event.target.result);
-    $(".container").append('<li>');
-    $(".container li:last-child").append('<a>');
-    $(".container li:last-child a").append(image.img);
-    imageCollection.set(image.id, image);
-    $('input.form-control.input-lg').val("");
-    $('.file').val("");
-    $('.container').removeClass('hidden');
-};
 
-function addFileToCollection() {
-    var file = document.querySelector('.file').files[0];
-    var reader = new FileReader();
-    reader.onloadend = function (event) {
-        createImage(event);
-    };
-    if (file) {
-        reader.readAsDataURL(file); //reads the data as a URL
-    }
-}
+//     function createImage(event) {
+//         var image = new NewImage(event.target.result);
+//         $( ".container").append('<li>');
+//         $( ".container li:last-child").append('<a>');
+//         $( ".container li:last-child a").append(image.img);
+//         imageCollection.set(image.id, image);
+//         $('input.form-control.input-lg').val("");
+//         $('.file').val("");
+//         $('.container').removeClass('hidden');
+//     };
 
-exports.default = photoController;
+
+//     function addFileToCollection(){
+//         var file = document.querySelector('.file').files[0];
+//         var reader  = new FileReader();
+//         reader.onloadend = function (event) {
+//            createImage(event);
+//         }
+//         if (file) {
+//             reader.readAsDataURL(file); //reads the data as a URL
+//         }
+//     }
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
@@ -50558,7 +49770,7 @@ module.exports = "<div class =\"row navbar-default\">\r\n    <ul class=\"nav nav
 /* 37 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"map\">\r\n        <header class=\"row\">\r\n            <div class=\"col-md-12\" ng-show = \"$ctrl.imageCollection.length\">\r\n               \t\t<ul class = \"container clearfix\">\r\n                \t\t<li style = \"font-size: 15px\" ng-repeat=\"el in $ctrl.imageCollection\">\r\n\t\t\t\t\t<a ng-href=\"\"><img ng-src=\"{{el.img.src}}\" alt=\"\"></a>\r\n                \t</li>\r\n                </ul>\r\n            </div>\r\n        </header>\r\n\r\n    <main>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-4\">\r\n                    <div id = \"mainPicture\" class=\"hidden\">\r\n                        <img alt=\"picture\" class=\"img-responsive\">\r\n                    </div>\r\n                    <h4 class=\"hidden\">User image description ( \r\n                        <a id = \"editInfo\"> edit </a> ) \r\n                    </h4>\r\n                    <form class=\"description-form hidden\">\r\n                            <div class=\"form-group\">\r\n                                <label for=\"image-description\">Description</label>\r\n                                <textarea class=\"form-control\" id=\"image-description\" placeholder=\"Description\"></textarea>\r\n                            </div>\r\n                            <button type=\"submit\" class=\"btn btn-info\">Submit</button>\r\n                            <button type=\"button\" class=\"btn btn-warning\">Cancel</button>\r\n                    </form>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <p class=\"exif-data\"></p>\r\n                </div>\r\n                <div class=\"col-md-5\">\r\n                    <div id=\"googleMap hide\" ></div>\r\n                </div>\r\n            </div>\r\n    </main>\r\n\r\n    <footer class=\"row\">\r\n        <div class=\"col-md-6\">\r\n            <div class=\"form-inline\">\r\n                <input type=\"file\" name=\"image\" class=\"file\">\r\n                <div class=\"form-group input-group\">\r\n                    <input type=\"text\" class=\"form-control input-lg pathToFile\" disabled placeholder=\"No file chosen\">\r\n                    <span class=\"input-group-btn\">\r\n                        <button class=\"browse btn btn-info input-lg\" type=\"button\" id = \"browse\" ng-click=\"$ctrl.browse()\"><i class=\"glyphicon glyphicon-search\"></i> Browse</button>\r\n                    </span>\r\n                </div>\r\n                <div class=\"form-group input-group\">\r\n                    <button class=\"btn btn-info input-lg\" type=\"button\" id = \"load\" ng-click=\"$ctrl.loadFile($ctrl.file)\">Upload </button>\r\n                </div>\r\n            </div>\r\n    </footer>\r\n    </div>";
+module.exports = "<div class=\"map\">\r\n        <header class=\"row\">\r\n            <div class=\"col-md-12\" ng-show = \"$ctrl.imageCollection.length\">\r\n                <ul class = \"container clearfix\">\r\n                    <li ng-repeat=\"el in $ctrl.imageCollection\">\r\n                        <a ng-href=\"\" ng-click = \"$ctrl.showImage(el)\">\r\n                            <img ng-src=\"{{el.img.src}}\" alt=\"\">\r\n                        </a>\r\n                    </li>\r\n                </ul>\r\n            </div>\r\n        </header>\r\n\r\n    <main>\r\n        <div class=\"row\">\r\n            <div class=\"col-md-4\">\r\n                <div id = \"mainPicture\" ng-show=\"$ctrl.imageView\">\r\n                    <img alt=\"picture\" class=\"img-responsive\" ng-src=\"{{$ctrl.imageView.img.src}}\">\r\n                </div>\r\n                <h4 class=\"hidden\">User image description ( \r\n                    <a id = \"editInfo\"> edit </a> ) \r\n                </h4>\r\n                <form class=\"description-form hidden\">\r\n                        <div class=\"form-group\">\r\n                            <label for=\"image-description\">Description</label>\r\n                            <textarea class=\"form-control\" id=\"image-description\" placeholder=\"Description\"></textarea>\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-info\">Submit</button>\r\n                        <button type=\"button\" class=\"btn btn-warning\">Cancel</button>\r\n                </form>\r\n            </div>\r\n            <div class=\"col-md-3\">\r\n                <p class=\"exif-data\"></p>\r\n            </div>\r\n            <div class=\"col-md-5\">\r\n                <div id=\"googleMap hide\"></div>\r\n            </div>\r\n        </div>\r\n    </main>\r\n\r\n    <footer class=\"row\">\r\n        <div class=\"col-md-6\">\r\n            <form class=\"form-inline\">\r\n                <input type=\"file\" name=\"image\" class=\"file\">\r\n                <div class=\"form-group input-group\">\r\n                    <input type=\"text\" class=\"form-control input-lg pathToFile\" disabled placeholder=\"No file chosen\">\r\n                    <span class=\"input-group-btn\">\r\n                        <button class=\"browse btn btn-info input-lg\" type=\"button\" id = \"browse\" ng-click=\"$ctrl.browse()\"><i class=\"glyphicon glyphicon-search\"></i> Browse</button>\r\n                    </span>\r\n                </div>\r\n                <div class=\"form-group input-group\">\r\n                    <button class=\"btn btn-info input-lg\" type=\"button\" id = \"load\" ng-click=\"$ctrl.loadFile($ctrl.file)\">Upload </button>\r\n                </div>\r\n            </form>\r\n    </footer>\r\n    </div>";
 
 /***/ }),
 /* 38 */
@@ -50778,6 +49990,879 @@ module.exports = "data:application/font-woff2;base64,d09GMgABAAAAAEZsAA8AAAAAsVw
 
 module.exports = __webpack_require__(5);
 
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function() {
+
+    var debug = false;
+
+    var root = this;
+
+    var EXIF = function(obj) {
+        if (obj instanceof EXIF) return obj;
+        if (!(this instanceof EXIF)) return new EXIF(obj);
+        this.EXIFwrapped = obj;
+    };
+
+    if (true) {
+        if (typeof module !== 'undefined' && module.exports) {
+            exports = module.exports = EXIF;
+        }
+        exports.EXIF = EXIF;
+    } else {
+        root.EXIF = EXIF;
+    }
+
+    var ExifTags = EXIF.Tags = {
+
+        // version tags
+        0x9000 : "ExifVersion",             // EXIF version
+        0xA000 : "FlashpixVersion",         // Flashpix format version
+
+        // colorspace tags
+        0xA001 : "ColorSpace",              // Color space information tag
+
+        // image configuration
+        0xA002 : "PixelXDimension",         // Valid width of meaningful image
+        0xA003 : "PixelYDimension",         // Valid height of meaningful image
+        0x9101 : "ComponentsConfiguration", // Information about channels
+        0x9102 : "CompressedBitsPerPixel",  // Compressed bits per pixel
+
+        // user information
+        0x927C : "MakerNote",               // Any desired information written by the manufacturer
+        0x9286 : "UserComment",             // Comments by user
+
+        // related file
+        0xA004 : "RelatedSoundFile",        // Name of related sound file
+
+        // date and time
+        0x9003 : "DateTimeOriginal",        // Date and time when the original image was generated
+        0x9004 : "DateTimeDigitized",       // Date and time when the image was stored digitally
+        0x9290 : "SubsecTime",              // Fractions of seconds for DateTime
+        0x9291 : "SubsecTimeOriginal",      // Fractions of seconds for DateTimeOriginal
+        0x9292 : "SubsecTimeDigitized",     // Fractions of seconds for DateTimeDigitized
+
+        // picture-taking conditions
+        0x829A : "ExposureTime",            // Exposure time (in seconds)
+        0x829D : "FNumber",                 // F number
+        0x8822 : "ExposureProgram",         // Exposure program
+        0x8824 : "SpectralSensitivity",     // Spectral sensitivity
+        0x8827 : "ISOSpeedRatings",         // ISO speed rating
+        0x8828 : "OECF",                    // Optoelectric conversion factor
+        0x9201 : "ShutterSpeedValue",       // Shutter speed
+        0x9202 : "ApertureValue",           // Lens aperture
+        0x9203 : "BrightnessValue",         // Value of brightness
+        0x9204 : "ExposureBias",            // Exposure bias
+        0x9205 : "MaxApertureValue",        // Smallest F number of lens
+        0x9206 : "SubjectDistance",         // Distance to subject in meters
+        0x9207 : "MeteringMode",            // Metering mode
+        0x9208 : "LightSource",             // Kind of light source
+        0x9209 : "Flash",                   // Flash status
+        0x9214 : "SubjectArea",             // Location and area of main subject
+        0x920A : "FocalLength",             // Focal length of the lens in mm
+        0xA20B : "FlashEnergy",             // Strobe energy in BCPS
+        0xA20C : "SpatialFrequencyResponse",    //
+        0xA20E : "FocalPlaneXResolution",   // Number of pixels in width direction per FocalPlaneResolutionUnit
+        0xA20F : "FocalPlaneYResolution",   // Number of pixels in height direction per FocalPlaneResolutionUnit
+        0xA210 : "FocalPlaneResolutionUnit",    // Unit for measuring FocalPlaneXResolution and FocalPlaneYResolution
+        0xA214 : "SubjectLocation",         // Location of subject in image
+        0xA215 : "ExposureIndex",           // Exposure index selected on camera
+        0xA217 : "SensingMethod",           // Image sensor type
+        0xA300 : "FileSource",              // Image source (3 == DSC)
+        0xA301 : "SceneType",               // Scene type (1 == directly photographed)
+        0xA302 : "CFAPattern",              // Color filter array geometric pattern
+        0xA401 : "CustomRendered",          // Special processing
+        0xA402 : "ExposureMode",            // Exposure mode
+        0xA403 : "WhiteBalance",            // 1 = auto white balance, 2 = manual
+        0xA404 : "DigitalZoomRation",       // Digital zoom ratio
+        0xA405 : "FocalLengthIn35mmFilm",   // Equivalent foacl length assuming 35mm film camera (in mm)
+        0xA406 : "SceneCaptureType",        // Type of scene
+        0xA407 : "GainControl",             // Degree of overall image gain adjustment
+        0xA408 : "Contrast",                // Direction of contrast processing applied by camera
+        0xA409 : "Saturation",              // Direction of saturation processing applied by camera
+        0xA40A : "Sharpness",               // Direction of sharpness processing applied by camera
+        0xA40B : "DeviceSettingDescription",    //
+        0xA40C : "SubjectDistanceRange",    // Distance to subject
+
+        // other tags
+        0xA005 : "InteroperabilityIFDPointer",
+        0xA420 : "ImageUniqueID"            // Identifier assigned uniquely to each image
+    };
+
+    var TiffTags = EXIF.TiffTags = {
+        0x0100 : "ImageWidth",
+        0x0101 : "ImageHeight",
+        0x8769 : "ExifIFDPointer",
+        0x8825 : "GPSInfoIFDPointer",
+        0xA005 : "InteroperabilityIFDPointer",
+        0x0102 : "BitsPerSample",
+        0x0103 : "Compression",
+        0x0106 : "PhotometricInterpretation",
+        0x0112 : "Orientation",
+        0x0115 : "SamplesPerPixel",
+        0x011C : "PlanarConfiguration",
+        0x0212 : "YCbCrSubSampling",
+        0x0213 : "YCbCrPositioning",
+        0x011A : "XResolution",
+        0x011B : "YResolution",
+        0x0128 : "ResolutionUnit",
+        0x0111 : "StripOffsets",
+        0x0116 : "RowsPerStrip",
+        0x0117 : "StripByteCounts",
+        0x0201 : "JPEGInterchangeFormat",
+        0x0202 : "JPEGInterchangeFormatLength",
+        0x012D : "TransferFunction",
+        0x013E : "WhitePoint",
+        0x013F : "PrimaryChromaticities",
+        0x0211 : "YCbCrCoefficients",
+        0x0214 : "ReferenceBlackWhite",
+        0x0132 : "DateTime",
+        0x010E : "ImageDescription",
+        0x010F : "Make",
+        0x0110 : "Model",
+        0x0131 : "Software",
+        0x013B : "Artist",
+        0x8298 : "Copyright"
+    };
+
+    var GPSTags = EXIF.GPSTags = {
+        0x0000 : "GPSVersionID",
+        0x0001 : "GPSLatitudeRef",
+        0x0002 : "GPSLatitude",
+        0x0003 : "GPSLongitudeRef",
+        0x0004 : "GPSLongitude",
+        0x0005 : "GPSAltitudeRef",
+        0x0006 : "GPSAltitude",
+        0x0007 : "GPSTimeStamp",
+        0x0008 : "GPSSatellites",
+        0x0009 : "GPSStatus",
+        0x000A : "GPSMeasureMode",
+        0x000B : "GPSDOP",
+        0x000C : "GPSSpeedRef",
+        0x000D : "GPSSpeed",
+        0x000E : "GPSTrackRef",
+        0x000F : "GPSTrack",
+        0x0010 : "GPSImgDirectionRef",
+        0x0011 : "GPSImgDirection",
+        0x0012 : "GPSMapDatum",
+        0x0013 : "GPSDestLatitudeRef",
+        0x0014 : "GPSDestLatitude",
+        0x0015 : "GPSDestLongitudeRef",
+        0x0016 : "GPSDestLongitude",
+        0x0017 : "GPSDestBearingRef",
+        0x0018 : "GPSDestBearing",
+        0x0019 : "GPSDestDistanceRef",
+        0x001A : "GPSDestDistance",
+        0x001B : "GPSProcessingMethod",
+        0x001C : "GPSAreaInformation",
+        0x001D : "GPSDateStamp",
+        0x001E : "GPSDifferential"
+    };
+
+    var StringValues = EXIF.StringValues = {
+        ExposureProgram : {
+            0 : "Not defined",
+            1 : "Manual",
+            2 : "Normal program",
+            3 : "Aperture priority",
+            4 : "Shutter priority",
+            5 : "Creative program",
+            6 : "Action program",
+            7 : "Portrait mode",
+            8 : "Landscape mode"
+        },
+        MeteringMode : {
+            0 : "Unknown",
+            1 : "Average",
+            2 : "CenterWeightedAverage",
+            3 : "Spot",
+            4 : "MultiSpot",
+            5 : "Pattern",
+            6 : "Partial",
+            255 : "Other"
+        },
+        LightSource : {
+            0 : "Unknown",
+            1 : "Daylight",
+            2 : "Fluorescent",
+            3 : "Tungsten (incandescent light)",
+            4 : "Flash",
+            9 : "Fine weather",
+            10 : "Cloudy weather",
+            11 : "Shade",
+            12 : "Daylight fluorescent (D 5700 - 7100K)",
+            13 : "Day white fluorescent (N 4600 - 5400K)",
+            14 : "Cool white fluorescent (W 3900 - 4500K)",
+            15 : "White fluorescent (WW 3200 - 3700K)",
+            17 : "Standard light A",
+            18 : "Standard light B",
+            19 : "Standard light C",
+            20 : "D55",
+            21 : "D65",
+            22 : "D75",
+            23 : "D50",
+            24 : "ISO studio tungsten",
+            255 : "Other"
+        },
+        Flash : {
+            0x0000 : "Flash did not fire",
+            0x0001 : "Flash fired",
+            0x0005 : "Strobe return light not detected",
+            0x0007 : "Strobe return light detected",
+            0x0009 : "Flash fired, compulsory flash mode",
+            0x000D : "Flash fired, compulsory flash mode, return light not detected",
+            0x000F : "Flash fired, compulsory flash mode, return light detected",
+            0x0010 : "Flash did not fire, compulsory flash mode",
+            0x0018 : "Flash did not fire, auto mode",
+            0x0019 : "Flash fired, auto mode",
+            0x001D : "Flash fired, auto mode, return light not detected",
+            0x001F : "Flash fired, auto mode, return light detected",
+            0x0020 : "No flash function",
+            0x0041 : "Flash fired, red-eye reduction mode",
+            0x0045 : "Flash fired, red-eye reduction mode, return light not detected",
+            0x0047 : "Flash fired, red-eye reduction mode, return light detected",
+            0x0049 : "Flash fired, compulsory flash mode, red-eye reduction mode",
+            0x004D : "Flash fired, compulsory flash mode, red-eye reduction mode, return light not detected",
+            0x004F : "Flash fired, compulsory flash mode, red-eye reduction mode, return light detected",
+            0x0059 : "Flash fired, auto mode, red-eye reduction mode",
+            0x005D : "Flash fired, auto mode, return light not detected, red-eye reduction mode",
+            0x005F : "Flash fired, auto mode, return light detected, red-eye reduction mode"
+        },
+        SensingMethod : {
+            1 : "Not defined",
+            2 : "One-chip color area sensor",
+            3 : "Two-chip color area sensor",
+            4 : "Three-chip color area sensor",
+            5 : "Color sequential area sensor",
+            7 : "Trilinear sensor",
+            8 : "Color sequential linear sensor"
+        },
+        SceneCaptureType : {
+            0 : "Standard",
+            1 : "Landscape",
+            2 : "Portrait",
+            3 : "Night scene"
+        },
+        SceneType : {
+            1 : "Directly photographed"
+        },
+        CustomRendered : {
+            0 : "Normal process",
+            1 : "Custom process"
+        },
+        WhiteBalance : {
+            0 : "Auto white balance",
+            1 : "Manual white balance"
+        },
+        GainControl : {
+            0 : "None",
+            1 : "Low gain up",
+            2 : "High gain up",
+            3 : "Low gain down",
+            4 : "High gain down"
+        },
+        Contrast : {
+            0 : "Normal",
+            1 : "Soft",
+            2 : "Hard"
+        },
+        Saturation : {
+            0 : "Normal",
+            1 : "Low saturation",
+            2 : "High saturation"
+        },
+        Sharpness : {
+            0 : "Normal",
+            1 : "Soft",
+            2 : "Hard"
+        },
+        SubjectDistanceRange : {
+            0 : "Unknown",
+            1 : "Macro",
+            2 : "Close view",
+            3 : "Distant view"
+        },
+        FileSource : {
+            3 : "DSC"
+        },
+
+        Components : {
+            0 : "",
+            1 : "Y",
+            2 : "Cb",
+            3 : "Cr",
+            4 : "R",
+            5 : "G",
+            6 : "B"
+        }
+    };
+
+    function addEvent(element, event, handler) {
+        if (element.addEventListener) {
+            element.addEventListener(event, handler, false);
+        } else if (element.attachEvent) {
+            element.attachEvent("on" + event, handler);
+        }
+    }
+
+    function imageHasData(img) {
+        return !!(img.exifdata);
+    }
+
+
+    function base64ToArrayBuffer(base64, contentType) {
+        contentType = contentType || base64.match(/^data\:([^\;]+)\;base64,/mi)[1] || ''; // e.g. 'data:image/jpeg;base64,...' => 'image/jpeg'
+        base64 = base64.replace(/^data\:([^\;]+)\;base64,/gmi, '');
+        var binary = atob(base64);
+        var len = binary.length;
+        var buffer = new ArrayBuffer(len);
+        var view = new Uint8Array(buffer);
+        for (var i = 0; i < len; i++) {
+            view[i] = binary.charCodeAt(i);
+        }
+        return buffer;
+    }
+
+    function objectURLToBlob(url, callback) {
+        var http = new XMLHttpRequest();
+        http.open("GET", url, true);
+        http.responseType = "blob";
+        http.onload = function(e) {
+            if (this.status == 200 || this.status === 0) {
+                callback(this.response);
+            }
+        };
+        http.send();
+    }
+
+    function getImageData(img, callback) {
+        function handleBinaryFile(binFile) {
+            var data = findEXIFinJPEG(binFile);
+            var iptcdata = findIPTCinJPEG(binFile);
+            img.exifdata = data || {};
+            img.iptcdata = iptcdata || {};
+            if (callback) {
+                callback.call(img);
+            }
+        }
+
+        if (img.src) {
+            if (/^data\:/i.test(img.src)) { // Data URI
+                var arrayBuffer = base64ToArrayBuffer(img.src);
+                handleBinaryFile(arrayBuffer);
+
+            } else if (/^blob\:/i.test(img.src)) { // Object URL
+                var fileReader = new FileReader();
+                fileReader.onload = function(e) {
+                    handleBinaryFile(e.target.result);
+                };
+                objectURLToBlob(img.src, function (blob) {
+                    fileReader.readAsArrayBuffer(blob);
+                });
+            } else {
+                var http = new XMLHttpRequest();
+                http.onload = function() {
+                    if (this.status == 200 || this.status === 0) {
+                        handleBinaryFile(http.response);
+                    } else {
+                        throw "Could not load image";
+                    }
+                    http = null;
+                };
+                http.open("GET", img.src, true);
+                http.responseType = "arraybuffer";
+                http.send(null);
+            }
+        } else if (window.FileReader && (img instanceof window.Blob || img instanceof window.File)) {
+            var fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                if (debug) console.log("Got file of length " + e.target.result.byteLength);
+                handleBinaryFile(e.target.result);
+            };
+
+            fileReader.readAsArrayBuffer(img);
+        }
+    }
+
+    function findEXIFinJPEG(file) {
+        var dataView = new DataView(file);
+
+        if (debug) console.log("Got file of length " + file.byteLength);
+        if ((dataView.getUint8(0) != 0xFF) || (dataView.getUint8(1) != 0xD8)) {
+            if (debug) console.log("Not a valid JPEG");
+            return false; // not a valid jpeg
+        }
+
+        var offset = 2,
+            length = file.byteLength,
+            marker;
+
+        while (offset < length) {
+            if (dataView.getUint8(offset) != 0xFF) {
+                if (debug) console.log("Not a valid marker at offset " + offset + ", found: " + dataView.getUint8(offset));
+                return false; // not a valid marker, something is wrong
+            }
+
+            marker = dataView.getUint8(offset + 1);
+            if (debug) console.log(marker);
+
+            // we could implement handling for other markers here,
+            // but we're only looking for 0xFFE1 for EXIF data
+
+            if (marker == 225) {
+                if (debug) console.log("Found 0xFFE1 marker");
+
+                return readEXIFData(dataView, offset + 4, dataView.getUint16(offset + 2) - 2);
+
+                // offset += 2 + file.getShortAt(offset+2, true);
+
+            } else {
+                offset += 2 + dataView.getUint16(offset+2);
+            }
+
+        }
+
+    }
+
+    function findIPTCinJPEG(file) {
+        var dataView = new DataView(file);
+
+        if (debug) console.log("Got file of length " + file.byteLength);
+        if ((dataView.getUint8(0) != 0xFF) || (dataView.getUint8(1) != 0xD8)) {
+            if (debug) console.log("Not a valid JPEG");
+            return false; // not a valid jpeg
+        }
+
+        var offset = 2,
+            length = file.byteLength;
+
+
+        var isFieldSegmentStart = function(dataView, offset){
+            return (
+                dataView.getUint8(offset) === 0x38 &&
+                dataView.getUint8(offset+1) === 0x42 &&
+                dataView.getUint8(offset+2) === 0x49 &&
+                dataView.getUint8(offset+3) === 0x4D &&
+                dataView.getUint8(offset+4) === 0x04 &&
+                dataView.getUint8(offset+5) === 0x04
+            );
+        };
+
+        while (offset < length) {
+
+            if ( isFieldSegmentStart(dataView, offset )){
+
+                // Get the length of the name header (which is padded to an even number of bytes)
+                var nameHeaderLength = dataView.getUint8(offset+7);
+                if(nameHeaderLength % 2 !== 0) nameHeaderLength += 1;
+                // Check for pre photoshop 6 format
+                if(nameHeaderLength === 0) {
+                    // Always 4
+                    nameHeaderLength = 4;
+                }
+
+                var startOffset = offset + 8 + nameHeaderLength;
+                var sectionLength = dataView.getUint16(offset + 6 + nameHeaderLength);
+
+                return readIPTCData(file, startOffset, sectionLength);
+
+                break;
+
+            }
+
+
+            // Not the marker, continue searching
+            offset++;
+
+        }
+
+    }
+    var IptcFieldMap = {
+        0x78 : 'caption',
+        0x6E : 'credit',
+        0x19 : 'keywords',
+        0x37 : 'dateCreated',
+        0x50 : 'byline',
+        0x55 : 'bylineTitle',
+        0x7A : 'captionWriter',
+        0x69 : 'headline',
+        0x74 : 'copyright',
+        0x0F : 'category'
+    };
+    function readIPTCData(file, startOffset, sectionLength){
+        var dataView = new DataView(file);
+        var data = {};
+        var fieldValue, fieldName, dataSize, segmentType, segmentSize;
+        var segmentStartPos = startOffset;
+        while(segmentStartPos < startOffset+sectionLength) {
+            if(dataView.getUint8(segmentStartPos) === 0x1C && dataView.getUint8(segmentStartPos+1) === 0x02){
+                segmentType = dataView.getUint8(segmentStartPos+2);
+                if(segmentType in IptcFieldMap) {
+                    dataSize = dataView.getInt16(segmentStartPos+3);
+                    segmentSize = dataSize + 5;
+                    fieldName = IptcFieldMap[segmentType];
+                    fieldValue = getStringFromDB(dataView, segmentStartPos+5, dataSize);
+                    // Check if we already stored a value with this name
+                    if(data.hasOwnProperty(fieldName)) {
+                        // Value already stored with this name, create multivalue field
+                        if(data[fieldName] instanceof Array) {
+                            data[fieldName].push(fieldValue);
+                        }
+                        else {
+                            data[fieldName] = [data[fieldName], fieldValue];
+                        }
+                    }
+                    else {
+                        data[fieldName] = fieldValue;
+                    }
+                }
+
+            }
+            segmentStartPos++;
+        }
+        return data;
+    }
+
+
+
+    function readTags(file, tiffStart, dirStart, strings, bigEnd) {
+        var entries = file.getUint16(dirStart, !bigEnd),
+            tags = {},
+            entryOffset, tag,
+            i;
+
+        for (i=0;i<entries;i++) {
+            entryOffset = dirStart + i*12 + 2;
+            tag = strings[file.getUint16(entryOffset, !bigEnd)];
+            if (!tag && debug) console.log("Unknown tag: " + file.getUint16(entryOffset, !bigEnd));
+            tags[tag] = readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd);
+        }
+        return tags;
+    }
+
+
+    function readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd) {
+        var type = file.getUint16(entryOffset+2, !bigEnd),
+            numValues = file.getUint32(entryOffset+4, !bigEnd),
+            valueOffset = file.getUint32(entryOffset+8, !bigEnd) + tiffStart,
+            offset,
+            vals, val, n,
+            numerator, denominator;
+
+        switch (type) {
+            case 1: // byte, 8-bit unsigned int
+            case 7: // undefined, 8-bit byte, value depending on field
+                if (numValues == 1) {
+                    return file.getUint8(entryOffset + 8, !bigEnd);
+                } else {
+                    offset = numValues > 4 ? valueOffset : (entryOffset + 8);
+                    vals = [];
+                    for (n=0;n<numValues;n++) {
+                        vals[n] = file.getUint8(offset + n);
+                    }
+                    return vals;
+                }
+
+            case 2: // ascii, 8-bit byte
+                offset = numValues > 4 ? valueOffset : (entryOffset + 8);
+                return getStringFromDB(file, offset, numValues-1);
+
+            case 3: // short, 16 bit int
+                if (numValues == 1) {
+                    return file.getUint16(entryOffset + 8, !bigEnd);
+                } else {
+                    offset = numValues > 2 ? valueOffset : (entryOffset + 8);
+                    vals = [];
+                    for (n=0;n<numValues;n++) {
+                        vals[n] = file.getUint16(offset + 2*n, !bigEnd);
+                    }
+                    return vals;
+                }
+
+            case 4: // long, 32 bit int
+                if (numValues == 1) {
+                    return file.getUint32(entryOffset + 8, !bigEnd);
+                } else {
+                    vals = [];
+                    for (n=0;n<numValues;n++) {
+                        vals[n] = file.getUint32(valueOffset + 4*n, !bigEnd);
+                    }
+                    return vals;
+                }
+
+            case 5:    // rational = two long values, first is numerator, second is denominator
+                if (numValues == 1) {
+                    numerator = file.getUint32(valueOffset, !bigEnd);
+                    denominator = file.getUint32(valueOffset+4, !bigEnd);
+                    val = new Number(numerator / denominator);
+                    val.numerator = numerator;
+                    val.denominator = denominator;
+                    return val;
+                } else {
+                    vals = [];
+                    for (n=0;n<numValues;n++) {
+                        numerator = file.getUint32(valueOffset + 8*n, !bigEnd);
+                        denominator = file.getUint32(valueOffset+4 + 8*n, !bigEnd);
+                        vals[n] = new Number(numerator / denominator);
+                        vals[n].numerator = numerator;
+                        vals[n].denominator = denominator;
+                    }
+                    return vals;
+                }
+
+            case 9: // slong, 32 bit signed int
+                if (numValues == 1) {
+                    return file.getInt32(entryOffset + 8, !bigEnd);
+                } else {
+                    vals = [];
+                    for (n=0;n<numValues;n++) {
+                        vals[n] = file.getInt32(valueOffset + 4*n, !bigEnd);
+                    }
+                    return vals;
+                }
+
+            case 10: // signed rational, two slongs, first is numerator, second is denominator
+                if (numValues == 1) {
+                    return file.getInt32(valueOffset, !bigEnd) / file.getInt32(valueOffset+4, !bigEnd);
+                } else {
+                    vals = [];
+                    for (n=0;n<numValues;n++) {
+                        vals[n] = file.getInt32(valueOffset + 8*n, !bigEnd) / file.getInt32(valueOffset+4 + 8*n, !bigEnd);
+                    }
+                    return vals;
+                }
+        }
+    }
+
+    function getStringFromDB(buffer, start, length) {
+        var outstr = "";
+        for (n = start; n < start+length; n++) {
+            outstr += String.fromCharCode(buffer.getUint8(n));
+        }
+        return outstr;
+    }
+
+    function readEXIFData(file, start) {
+        if (getStringFromDB(file, start, 4) != "Exif") {
+            if (debug) console.log("Not valid EXIF data! " + getStringFromDB(file, start, 4));
+            return false;
+        }
+
+        var bigEnd,
+            tags, tag,
+            exifData, gpsData,
+            tiffOffset = start + 6;
+
+        // test for TIFF validity and endianness
+        if (file.getUint16(tiffOffset) == 0x4949) {
+            bigEnd = false;
+        } else if (file.getUint16(tiffOffset) == 0x4D4D) {
+            bigEnd = true;
+        } else {
+            if (debug) console.log("Not valid TIFF data! (no 0x4949 or 0x4D4D)");
+            return false;
+        }
+
+        if (file.getUint16(tiffOffset+2, !bigEnd) != 0x002A) {
+            if (debug) console.log("Not valid TIFF data! (no 0x002A)");
+            return false;
+        }
+
+        var firstIFDOffset = file.getUint32(tiffOffset+4, !bigEnd);
+
+        if (firstIFDOffset < 0x00000008) {
+            if (debug) console.log("Not valid TIFF data! (First offset less than 8)", file.getUint32(tiffOffset+4, !bigEnd));
+            return false;
+        }
+
+        tags = readTags(file, tiffOffset, tiffOffset + firstIFDOffset, TiffTags, bigEnd);
+
+        if (tags.ExifIFDPointer) {
+            exifData = readTags(file, tiffOffset, tiffOffset + tags.ExifIFDPointer, ExifTags, bigEnd);
+            for (tag in exifData) {
+                switch (tag) {
+                    case "LightSource" :
+                    case "Flash" :
+                    case "MeteringMode" :
+                    case "ExposureProgram" :
+                    case "SensingMethod" :
+                    case "SceneCaptureType" :
+                    case "SceneType" :
+                    case "CustomRendered" :
+                    case "WhiteBalance" :
+                    case "GainControl" :
+                    case "Contrast" :
+                    case "Saturation" :
+                    case "Sharpness" :
+                    case "SubjectDistanceRange" :
+                    case "FileSource" :
+                        exifData[tag] = StringValues[tag][exifData[tag]];
+                        break;
+
+                    case "ExifVersion" :
+                    case "FlashpixVersion" :
+                        exifData[tag] = String.fromCharCode(exifData[tag][0], exifData[tag][1], exifData[tag][2], exifData[tag][3]);
+                        break;
+
+                    case "ComponentsConfiguration" :
+                        exifData[tag] =
+                            StringValues.Components[exifData[tag][0]] +
+                            StringValues.Components[exifData[tag][1]] +
+                            StringValues.Components[exifData[tag][2]] +
+                            StringValues.Components[exifData[tag][3]];
+                        break;
+                }
+                tags[tag] = exifData[tag];
+            }
+        }
+
+        if (tags.GPSInfoIFDPointer) {
+            gpsData = readTags(file, tiffOffset, tiffOffset + tags.GPSInfoIFDPointer, GPSTags, bigEnd);
+            for (tag in gpsData) {
+                switch (tag) {
+                    case "GPSVersionID" :
+                        gpsData[tag] = gpsData[tag][0] +
+                            "." + gpsData[tag][1] +
+                            "." + gpsData[tag][2] +
+                            "." + gpsData[tag][3];
+                        break;
+                }
+                tags[tag] = gpsData[tag];
+            }
+        }
+
+        return tags;
+    }
+
+    EXIF.getData = function(img, callback) {
+        if ((img instanceof Image || img instanceof HTMLImageElement) && !img.complete) return false;
+
+        if (!imageHasData(img)) {
+            getImageData(img, callback);
+        } else {
+            if (callback) {
+                callback.call(img);
+            }
+        }
+        return true;
+    }
+
+    EXIF.getTag = function(img, tag) {
+        if (!imageHasData(img)) return;
+        return img.exifdata[tag];
+    }
+
+    EXIF.getAllTags = function(img) {
+        if (!imageHasData(img)) return {};
+        var a,
+            data = img.exifdata,
+            tags = {};
+        for (a in data) {
+            if (data.hasOwnProperty(a)) {
+                tags[a] = data[a];
+            }
+        }
+        return tags;
+    }
+
+    EXIF.pretty = function(img) {
+        if (!imageHasData(img)) return "";
+        var a,
+            data = img.exifdata,
+            strPretty = "";
+        for (a in data) {
+            if (data.hasOwnProperty(a)) {
+                if (typeof data[a] == "object") {
+                    if (data[a] instanceof Number) {
+                        strPretty += a + " : " + data[a] + " [" + data[a].numerator + "/" + data[a].denominator + "]\r\n";
+                    } else {
+                        strPretty += a + " : [" + data[a].length + " values]\r\n";
+                    }
+                } else {
+                    strPretty += a + " : " + data[a] + "\r\n";
+                }
+            }
+        }
+        return strPretty;
+    }
+
+    EXIF.readFromBinaryFile = function(file) {
+        return findEXIFinJPEG(file);
+    }
+
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
+            return EXIF;
+        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    }
+}.call(this));
+
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _exifJs = __webpack_require__(51);
+
+var _exifJs2 = _interopRequireDefault(_exifJs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ExifDataManager = function () {
+    function ExifDataManager() {
+        _classCallCheck(this, ExifDataManager);
+    }
+
+    _createClass(ExifDataManager, [{
+        key: 'extractGPSData',
+        value: function extractGPSData(img) {
+            var that = this;
+            var result = void 0;
+            _exifJs2.default.getData(img, function () {
+                var yCoord = _exifJs2.default.getTag(img, 'GPSLongitude') || null;
+                var xCoord = _exifJs2.default.getTag(img, 'GPSLatitude') || null;
+                result = { x: that._coordinatesToDecimal(xCoord),
+                    y: that._coordinatesToDecimal(yCoord)
+                };
+            });
+            return result;
+        }
+    }, {
+        key: 'extractExifData',
+        value: function extractExifData(img) {
+            var allMetaData = _exifJs2.default.getAllTags(img);
+            return JSON.stringify(allMetaData, null, "\t");
+        }
+    }, {
+        key: '_coordinatesToDecimal',
+        value: function _coordinatesToDecimal(number) {
+            if (number) {
+                return number[0].numerator + number[1].numerator / (60 * number[1].denominator) + number[2].numerator / (3600 * number[2].denominator);
+            }
+            return;
+        }
+    }]);
+
+    return ExifDataManager;
+}();
+
+exports.default = ExifDataManager;
 
 /***/ })
 /******/ ]);
