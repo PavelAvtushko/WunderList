@@ -14,7 +14,6 @@ class tasksFormController {
     }
  
     sendData(userName) {
-        event.preventDefault();
         let newData = {
             "name": this.title,
             "status": this.columnID || "0",
@@ -29,6 +28,7 @@ class tasksFormController {
         this.description = null;
         this.title = null;
         this.columnID = 0;
+        //event.preventDefault();
     }
 
     deleteTasks() {
@@ -38,6 +38,10 @@ class tasksFormController {
             });
         this.$location.path("/Home/Tasks");
     }
+
+
+
+    
 }
 
 tasksFormController.$inject = ['$http', '$location', '$window' , 'localstorageManager'];

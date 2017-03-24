@@ -1,0 +1,7 @@
+const FILE_INPUT_SELECTOR = '.file';
+const VIEW_PATH_INPUT_SELECTOR = '.pathToFile';
+const MAP_SCALE = 8;
+const MAP_SELECTOR = "#googleMap";
+
+
+export {FILE_INPUT_SELECTOR, VIEW_PATH_INPUT_SELECTOR, MAP_SCALE, MAP_SELECTOR};

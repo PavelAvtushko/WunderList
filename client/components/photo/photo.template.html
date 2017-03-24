@@ -13,9 +13,9 @@
 
     <main>
         <div class="row">
-            <div class="col-md-4">
-                <div id = "mainPicture" ng-show="$ctrl.imageView">
-                    <img alt="picture" class="img-responsive" ng-src="{{$ctrl.imageView.img.src}}">
+            <div class="col-md-6">
+                <div id = "mainPicture" ng-show="$ctrl.currentImage">
+                    <img alt="picture" class="img-responsive" ng-src="{{$ctrl.currentImage.img.src}}">
                 </div>
                 <h4 class="hidden">User image description ( 
                     <a id = "editInfo"> edit </a> ) 
@@ -29,11 +29,11 @@
                         <button type="button" class="btn btn-warning">Cancel</button>
                 </form>
             </div>
-            <div class="col-md-3">
+<!--             <div class="col-md-3">
                 <p class="exif-data"></p>
-            </div>
-            <div class="col-md-5">
-                <div id="googleMap hide"></div>
+            </div> -->
+            <div class="col-md-6">
+                <div id="googleMap" ng-show="$ctrl.currentImage.coord.x || $ctrl.currentImage.coord.y"></div>
             </div>
         </div>
     </main>
