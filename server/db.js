@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 
 //a variable, containts the database connection
-let state = {
+const state = {
     db: null
 };
 

@@ -1,36 +1,7 @@
 import {URL} from '../../constants.js';
 import {FILE_INPUT_SELECTOR, VIEW_PATH_INPUT_SELECTOR, MAP_SCALE, MAP_SELECTOR} from './photo.constants.js';
 
-// const FILE_INPUT_SELECTOR = '.file';
-// const VIEW_PATH_INPUT_SELECTOR = '.pathToFile';
 const IMAGE_COLLECTION = [];
-// const MAP_SCALE = 8;
-// const MAP_SELECTOR = "#googleMap";
-
-class Map {
-    constructor(selector, coord) {
-        const myLatlng = new google.maps.LatLng(coord.x, coord.y);
-        const mapProp= { center: myLatlng, zoom: MAP_SCALE };
-        this.map = new google.maps.Map(document.querySelector(selector), mapProp);
-        this.marker = new google.maps.Marker({
-            position: myLatlng,
-            map: this.map
-        });
-    }
-
-    changeMapCoord(coord){
-        if (!coord.x || !coord.y) {
-            return;
-        };
-        const newLatlng = new google.maps.LatLng(coord.x, coord.y);
-        this.map.setCenter(newLatlng);
-        this.marker.setMap(null);
-        this.marker = new google.maps.Marker({
-            position: newLatlng,
-            map: this.map
-        });
-    }
-}
 
 class NewImage {
     constructor(src) {
@@ -45,13 +16,14 @@ class NewImage {
 }
 
 class PhotoController {
-    constructor($timeout, exifDataManager) {
+    constructor($timeout, exifDataManager, mapManager) {
         this.file;
         this.imageCollection = IMAGE_COLLECTION;
         this.$timeout = $timeout;
         this.exifDataManager = exifDataManager;
         this.currentImage;
-        this.map = {};
+       // this.map = mapManager.map;
+        this.mapManager = mapManager;
     }
 
     browse() {
@@ -67,22 +39,22 @@ class PhotoController {
         this.currentImage = image;
         this.$timeout(() =>{
             if (image.coord.x && image.coord.y && !image.map) {
-                this.map = new Map( MAP_SELECTOR, image.coord);
+                this.mapManager.createMap(MAP_SELECTOR, image.coord, MAP_SCALE);
             }
             else if (image.coord.x && image.coord.y && image.map) {
-                this.map.changeMapCoord(image.coord);
+                this.mapManager.changeMapCoord(image.coord);
             }
         }, 0);
     }
 
-    showMap(el) {
-        if (this.map.map && this.currentImage) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+    // showMap(el) {
+    //     if (this.mapManager.map && this.currentImage) {
+    //         return true;
+    //     }
+    //     else {
+    //         return false;
+    //     }
+    // }
 
     loadFile() {
         const fileCollection = document.querySelector(FILE_INPUT_SELECTOR);
@@ -116,5 +88,5 @@ class PhotoController {
     }
 };
 
-PhotoController.$inject = ['$timeout', 'exifDataManager'];
+PhotoController.$inject = ['$timeout', 'exifDataManager', 'mapManager'];
 export default PhotoController;

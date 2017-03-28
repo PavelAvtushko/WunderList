@@ -9,5 +9,3 @@ let photoComponent = {
 };
 
 export default photoComponent;
-
-

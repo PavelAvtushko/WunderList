@@ -2,7 +2,7 @@ const Tasks = require('../model/Tasks.js');
 
 exports.getAllTasks = function(req, res) {
     let userName = req.query.user;
-    Tasks.getAllTasks(userName, function(err, docs){
+    Tasks.getAllTasks(userName, function(err, docs) {
         if (err) {
             console.log(err);
             return res.sendStatus(500);

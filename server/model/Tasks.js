@@ -26,14 +26,12 @@ exports.putNewTask = function(user, newData, callback) {
     })
 }
 
-
 exports.deleteAllTasks = function(user, callback){
      db.get().collection(user).remove({},
         function(err, result){
             callback(err, result);
         });
 }
-
 
 exports.updateTask = function(user, itemId, newData, callback) {
     db.get().collection(user)
