@@ -1,11 +1,4 @@
-import {URL} from '../../constants.js';
-
-const COLUMNS = [
-    {id: 0, name: 'Todo'},
-    {id: 1, name: 'In progress'},
-    {id: 2, name: 'Test'},
-    {id: 3, name: 'Done'}
-];
+import {URL, COLUMNS} from '../../constants.js';
 
 class AppController {
     constructor($http, $location, localstorageManager, userInfo) {

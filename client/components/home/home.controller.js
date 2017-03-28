@@ -39,6 +39,10 @@ class HomeController {
         });
         return;
     }
+    
+    upgadeItems(el) {
+        console.log(el);
+    }
 };
 
 HomeController.$inject = ['$http'];

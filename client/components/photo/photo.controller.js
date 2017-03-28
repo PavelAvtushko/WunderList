@@ -16,12 +16,14 @@ class NewImage {
 }
 
 class PhotoController {
-    constructor($timeout, exifDataManager, mapManager) {
+    constructor($timeout, exifDataManager, mapManager, userInfo, $http) {
+        this.userInfo = userInfo;
         this.file;
         this.imageCollection = IMAGE_COLLECTION;
         this.$timeout = $timeout;
         this.exifDataManager = exifDataManager;
         this.currentImage;
+        this.$http = $http;
        // this.map = mapManager.map;
         this.mapManager = mapManager;
     }
@@ -38,10 +40,10 @@ class PhotoController {
     showImage(image){
         this.currentImage = image;
         this.$timeout(() =>{
-            if (image.coord.x && image.coord.y && !image.map) {
+            if (image.coord && !image.map) {
                 this.mapManager.createMap(MAP_SELECTOR, image.coord, MAP_SCALE);
             }
-            else if (image.coord.x && image.coord.y && image.map) {
+            else if (image.coord && image.map) {
                 this.mapManager.changeMapCoord(image.coord);
             }
         }, 0);
@@ -77,10 +79,17 @@ class PhotoController {
             reader.readAsDataURL(file);
         };
         reader.onloadend = function (event) {
+            console.log(event);
             that.$timeout(() => {
                 image = new NewImage(event.target.result);
                 image.coord = that.exifDataManager.extractGPSData(image.img);
                 image.exifData = that.exifDataManager.extractExifData(image.img);
+                that.$http.post(URL + 'photo'+ '?user=' + that.userInfo.name, {'as': image.src}).then(obj => {
+                    //that.imageCollection.push(obj.data.as);
+                    console.log(obj.data);
+                    // this.data = obj.data;
+                    // localstorageManager.setObject('wunderList', obj.data);
+                });
                 that.imageCollection.push(image);
             }, 0);
 
@@ -88,5 +97,5 @@ class PhotoController {
     }
 };
 
-PhotoController.$inject = ['$timeout', 'exifDataManager', 'mapManager'];
+PhotoController.$inject = ['$timeout', 'exifDataManager', 'mapManager', 'userInfo', '$http'];
 export default PhotoController;

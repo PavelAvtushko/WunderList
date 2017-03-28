@@ -30,6 +30,10 @@ app.delete('/tasks', tasksController.deleteAllTasks);
 app.put('/tasks/:id', tasksController.updateTask);
 
 
+
+app.post('/tasks/photo', tasksController.addPhoto);
+
+
 //connects to the database and starts the server
 // db.connect('mongodb://localhost:27017/myToDo', function(err){
     db.connect('mongodb://pasha:pashawunderlist@ds127190.mlab.com:27190/wunderlist',

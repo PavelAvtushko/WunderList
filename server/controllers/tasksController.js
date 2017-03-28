@@ -72,6 +72,13 @@ exports.logUser = function(req, res) {
     else res.send(404);
 }
 
+exports.addPhoto = function(req, res) {
+    console.log(req.body);
+    res.send(req.body);
+}
+
+
+
 
 function createTaskData(req){
     let newData = {    

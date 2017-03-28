@@ -24,10 +24,6 @@
     background: white;
 }
 
-.map .wrapper > main {
-    flex: 1;
-}
-
 .map .wrapper > footer {
     padding: 50px 0;
 }

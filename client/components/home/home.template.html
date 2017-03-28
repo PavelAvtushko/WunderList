@@ -6,12 +6,12 @@
                 <a ng-click = "$ctrl.deleteItem(el)" class = "pull-right">
                     <i class ="glyphicon glyphicon-trash"></i>
                 </a>
-                <a ng-click = "" class = "pull-right">
+                <a ng-click = "$ctrl.upgadeItems(el)" class = "pull-right">
                     <i class ="glyphicon glyphicon-pencil"></i>
                 </a>
             </div>
             <h4> {{el.name || "No name"}}</h4>
-            <p> {{el.description || "No description"}}</p>
+            <p> {{ el.description || 'No description' }} </p>
 <!--             <p> Author </p> -->
             <div class="btn-group" role="group" aria-label="...">
                 <button type="button" class="btn btn-default" ng-click = "$ctrl.moveLeft(el)" ng-hide = "taskType.id === 0" >
@@ -25,3 +25,4 @@
         <p> Total: {{quontity.length}}</p>
     </div>
 </div>
+

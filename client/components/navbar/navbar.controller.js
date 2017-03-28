@@ -4,8 +4,8 @@ class NavbarController {
       //  console.log('NavbarController...');
     }
     deleteUser(){
-    	this.userInfo.setDefault();
-    	//console.log(this.userInfo.name);
+        this.userInfo.setDefault();
+        //console.log(this.userInfo.name);
     }
 }
 

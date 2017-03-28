@@ -2,13 +2,16 @@ import {URL} from '../../constants.js';
 
 class LogInController {
     constructor($http, $location, userInfo) {
-        this.$location=$location;
-        this.$http=$http;
+        this.$location = $location;
+        this.$http = $http;
         this.userInfo = userInfo;
     }
     
     submit(user){
-        if (!user) {return;}
+        if (!user) { 
+            return;
+        };
+        
         this.$http.post(URL, {userName: user}).then((data) => {
             this.userInfo.name = data.data.name;
             this.$location.path("/Home/Tasks");
