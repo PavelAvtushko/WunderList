@@ -11,7 +11,7 @@ class LocalstorageManager {
     getObject(key) {
         return JSON.parse(this.$window.localStorage[key] || '{}');
     }
-};
+}
 
 LocalstorageManager.$inject = ['$window'];
 

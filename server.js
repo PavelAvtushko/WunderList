@@ -1,7 +1,7 @@
 const express = require ('express');
 const bodyParser = require('body-parser');
 const app = express();
-const path = require('path');
+// const path = require('path');
 const tasksController = require('./server/controllers/tasksController');
 const db = require('./server/db');
 
@@ -29,8 +29,7 @@ app.delete('/tasks', tasksController.deleteAllTasks);
 //accepts an id of task (with new position data) and updates the database
 app.put('/tasks/:id', tasksController.updateTask);
 
-
-
+//TODO  - work with graphic data
 app.post('/tasks/photo', tasksController.addPhoto);
 
 
@@ -43,5 +42,5 @@ app.post('/tasks/photo', tasksController.addPhoto);
         }
     app.listen(8080, function(){
         console.log('connection...');
-    })
+    });
 });

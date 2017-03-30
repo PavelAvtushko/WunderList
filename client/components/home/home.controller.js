@@ -12,7 +12,7 @@ class HomeController {
         direction ? task.status++ : task.status--;
         task.lastModifyDate = Date.now();
         this.$http.put(URL + task.id + '?user=' + this.user, task)
-            .then(obj => console.log(obj.status));
+            .then( obj => console.log(obj.status));
         return;
     }
 
@@ -43,7 +43,7 @@ class HomeController {
     upgadeItems(el) {
         console.log(el);
     }
-};
+}
 
 HomeController.$inject = ['$http'];
 

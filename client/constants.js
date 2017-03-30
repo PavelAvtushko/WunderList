@@ -7,5 +7,6 @@ const COLUMNS = [
     {id: 3, name: 'Done'}
 ];
 
+const FAKE_COORD = {x:38.90983333333333, y:1.4386666666666668};
 
-export {URL, COLUMNS};
+export {URL, COLUMNS, FAKE_COORD};

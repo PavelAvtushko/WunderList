@@ -23,7 +23,7 @@ class MapManager {
                 position: newLatlng,
                 map: this.map
             });
-        };
+        }
     }
 }
 

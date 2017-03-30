@@ -10,7 +10,7 @@ class LogInController {
     submit(user){
         if (!user) { 
             return;
-        };
+        }
         
         this.$http.post(URL, {userName: user}).then((data) => {
             this.userInfo.name = data.data.name;

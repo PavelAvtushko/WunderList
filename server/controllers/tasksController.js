@@ -4,48 +4,52 @@ exports.getAllTasks = function(req, res) {
     let userName = req.query.user;
     Tasks.getAllTasks(userName, function(err, docs) {
         if (err) {
-            console.log(err);
+            //console.log(err);
             return res.sendStatus(500);
         }
         res.send(docs);
     });
-}
+};
 
 
 exports.deleteById = function(req, res) {
     let userName = req.query.user;
     Tasks.deleteById(userName, +req.params.id, function(err, result){
         if (err) {
-            console.log(err);
+            //console.log(err);
             return res.sendStatus(500);
         }
-        res.sendStatus(200);
+        if (result) {
+            res.sendStatus(200);
+        }
     });
-}
+};
 
 
 exports.putNewTask = function(req, res) {
     let userName = req.query.user;
     Tasks.putNewTask(userName, req.body, function(err, result){
         if (err) {
-            console.log(err);
+            //console.log(err);
             return res.sendStatus(500);
         }
-        return res.send(result.ops[0]);;
+        return res.send(result.ops[0]);
     });
-}
+};
 
 
 exports.deleteAllTasks = function(req, res){
     let userName = req.query.user;
     Tasks.deleteAllTasks(userName, function(err, result){
         if (err) {
-            console.log(err);
+            //console.log(err);
             return res.sendStatus(500);
         }
-        res.sendStatus(200);
+        if (result) {
+            res.sendStatus(200);
+        }
     });
-}
+};
 
 
 exports.updateTask = function(req, res){
@@ -54,12 +58,14 @@ exports.updateTask = function(req, res){
         createTaskData(req),
         function(err, result){
             if (err) {
-                console.log(err);
+                //console.log(err);
                 return res.sendStatus(500);
             }
-        res.sendStatus(200);
+            if(result) {
+                res.sendStatus(200);
+            }
     });
-}
+};
 
 
 exports.logUser = function(req, res) {
@@ -70,14 +76,12 @@ exports.logUser = function(req, res) {
         });
     } 
     else res.send(404);
-}
+};
 
+//TODO - add to database
 exports.addPhoto = function(req, res) {
-    console.log(req.body);
     res.send(req.body);
-}
-
-
+};
 
 
 function createTaskData(req){

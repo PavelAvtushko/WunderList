@@ -4,7 +4,7 @@ class AppController {
     constructor($http, $location, localstorageManager, userInfo) {
         if (!userInfo.name) {
             $location.path("/");
-        };
+        }
         this.columns = COLUMNS;
         this.userName = userInfo.name || 'none';
         this.data = [];

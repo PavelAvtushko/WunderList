@@ -1,6 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
 
-//a variable, containts the database connection
 const state = {
     db: null
 };
@@ -10,7 +9,7 @@ const state = {
 exports.connect = function (url, callback) {
     if (state.db) {
         return callback();
-    };
+    }
     
     MongoClient.connect(url, function(err, db) {
         if (err) {

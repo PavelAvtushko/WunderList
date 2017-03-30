@@ -31,7 +31,7 @@ class PhotoController {
     browse() {
         $(FILE_INPUT_SELECTOR).trigger('click'); //искусственно вызывает клик;
         $(FILE_INPUT_SELECTOR).on('change', () => {this.fileChange()});
-    };
+    }
 
     fileChange() {
         $(VIEW_PATH_INPUT_SELECTOR).val($(FILE_INPUT_SELECTOR).val().replace(/C:\\fakepath\\/i, ''));
@@ -63,7 +63,7 @@ class PhotoController {
         if (!fileCollection.files.length || !fileCollection.files[0].type.match('image/jpeg')){
            // alert('wrong type of file');
             return;
-        };
+        }
 
         const file = fileCollection.files[0];
         this.addFileToCollection(file);//addFileToCollection();
@@ -77,7 +77,7 @@ class PhotoController {
         let reader  = new FileReader();
         if (file) {
             reader.readAsDataURL(file);
-        };
+        }
         reader.onloadend = function (event) {
             console.log(event);
             that.$timeout(() => {
@@ -95,7 +95,7 @@ class PhotoController {
 
         };
     }
-};
+}
 
 PhotoController.$inject = ['$timeout', 'exifDataManager', 'mapManager', 'userInfo', '$http'];
 export default PhotoController;

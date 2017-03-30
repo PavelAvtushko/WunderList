@@ -11,7 +11,7 @@ export default class ExifDataManager{
             let xCoord = EXIF.getTag(img, 'GPSLatitude') || null;
             result = { x: that._coordinatesToDecimal(xCoord),
                        y: that._coordinatesToDecimal(yCoord) 
-                    }
+                    };
         });
         return result;
     }

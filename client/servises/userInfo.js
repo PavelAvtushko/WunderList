@@ -17,6 +17,6 @@ class UserInfo {
     setDefault(){
         this._name = null;
     }
-};
+}
 
 export default UserInfo;

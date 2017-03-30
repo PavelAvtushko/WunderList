@@ -388,8 +388,11 @@ var URL = '/tasks/';
 
 var COLUMNS = [{ id: 0, name: 'Todo' }, { id: 1, name: 'In progress' }, { id: 2, name: 'Test' }, { id: 3, name: 'Done' }];
 
+var FAKE_COORD = { x: 38.90983333333333, y: 1.4386666666666668 };
+
 exports.URL = URL;
 exports.COLUMNS = COLUMNS;
+exports.FAKE_COORD = FAKE_COORD;
 
 /***/ }),
 /* 3 */
@@ -10676,6 +10679,10 @@ __webpack_require__(3);
 
 __webpack_require__(47);
 
+var _constants = __webpack_require__(2);
+
+var _constants2 = _interopRequireDefault(_constants);
+
 var _appConfig = __webpack_require__(10);
 
 var _appConfig2 = _interopRequireDefault(_appConfig);
@@ -10722,8 +10729,6 @@ var _mapManager2 = _interopRequireDefault(_mapManager);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var coord = { x: 38.90983333333333, y: 1.4386666666666668 };
-
 var app = _angular2.default.module('app', [_angularUiRouter2.default]);
 
 app.component('app', _app2.default);
@@ -10747,11 +10752,12 @@ app.factory('exifDataManager', function () {
 });
 
 app.factory('mapManager', function () {
-    return new _mapManager2.default('#googleMap', coord);
+    return new _mapManager2.default('#googleMap', _constants2.default);
 });
 
 app.config(_appConfig2.default);
 
+//angular start
 _angular2.default.element(document).ready(function () {
     _angular2.default.bootstrap(document, ['app']);
 });
@@ -48894,7 +48900,7 @@ var AppController = function AppController($http, $location, localstorageManager
 
     if (!userInfo.name) {
         $location.path("/");
-    };
+    }
     this.columns = _constants.COLUMNS;
     this.userName = userInfo.name || 'none';
     this.data = [];
@@ -49022,8 +49028,6 @@ var HomeController = function () {
     return HomeController;
 }();
 
-;
-
 HomeController.$inject = ['$http'];
 
 exports.default = HomeController;
@@ -49061,7 +49065,7 @@ var LogInController = function () {
 
             if (!user) {
                 return;
-            };
+            }
 
             this.$http.post(_constants.URL, { userName: user }).then(function (data) {
                 _this.userInfo.name = data.data.name;
@@ -49324,7 +49328,7 @@ var PhotoController = function () {
             if (!fileCollection.files.length || !fileCollection.files[0].type.match('image/jpeg')) {
                 // alert('wrong type of file');
                 return;
-            };
+            }
 
             var file = fileCollection.files[0];
             this.addFileToCollection(file); //addFileToCollection();
@@ -49339,7 +49343,7 @@ var PhotoController = function () {
             var reader = new FileReader();
             if (file) {
                 reader.readAsDataURL(file);
-            };
+            }
             reader.onloadend = function (event) {
                 console.log(event);
                 that.$timeout(function () {
@@ -49360,8 +49364,6 @@ var PhotoController = function () {
 
     return PhotoController;
 }();
-
-;
 
 PhotoController.$inject = ['$timeout', 'exifDataManager', 'mapManager', 'userInfo', '$http'];
 exports.default = PhotoController;
@@ -49513,8 +49515,6 @@ var LocalstorageManager = function () {
     return LocalstorageManager;
 }();
 
-;
-
 LocalstorageManager.$inject = ['$window'];
 
 exports.default = LocalstorageManager;
@@ -49625,7 +49625,7 @@ var MapManager = function () {
                     position: newLatlng,
                     map: this.map
                 });
-            };
+            }
         }
     }]);
 
@@ -49678,8 +49678,6 @@ var UserInfo = function () {
     return UserInfo;
 }();
 
-;
-
 exports.default = UserInfo;
 
 /***/ }),
@@ -49719,7 +49717,7 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "/*\r\n    custom styles required\r\n*/", ""]);
 
 // exports
 
@@ -49761,7 +49759,7 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, "form {\r\n    background: #e7e7e7;\r\n    padding: 10px;\r\n}\r\n#delTasks {\r\n    margin-left: 30px;\r\n}", ""]);
+exports.push([module.i, "form {\r\n    background: #e7e7e7;\r\n    padding: 10px;\r\n}\r\n\r\n#delTasks {\r\n    margin-left: 30px;\r\n}", ""]);
 
 // exports
 
@@ -50602,7 +50600,7 @@ module.exports = "<div class=\"wrapper container\">\r\n    <p class = \"pull-lef
 /* 36 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"card\">\r\n    <div class = \"col-md-3 panel panel-default\" ng-repeat = \"taskType in $ctrl.columns\">\r\n        <h2 class=\"text-center\">{{::taskType.name}}</h2>\r\n        <div ng-repeat = \"el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' \" class =\"well\">\r\n            <div class = \"pull-right card-icons\">\r\n                <a ng-click = \"$ctrl.deleteItem(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-trash\"></i>\r\n                </a>\r\n                <a ng-click = \"$ctrl.upgadeItems(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-pencil\"></i>\r\n                </a>\r\n            </div>\r\n            <h4> {{el.name || \"No name\"}}</h4>\r\n            <p> {{ el.description || 'No description' }} </p>\r\n<!--             <p> Author </p> -->\r\n            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveLeft(el)\" ng-hide = \"taskType.id === 0\" >\r\n                    <i class=\"glyphicon glyphicon-chevron-left\"></i>\r\n                </button>\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveRight(el)\" ng-hide = \"taskType.id === $ctrl.columns.length - 1\">\r\n                    <i class=\"glyphicon glyphicon-chevron-right\"></i>\r\n                </button>\r\n            </div>\r\n        </div>\r\n        <p> Total: {{quontity.length}}</p>\r\n    </div>\r\n</div>\r\n\r\n";
+module.exports = "<div class=\"card\">\r\n    <div class = \"col-md-3 panel panel-default\" ng-repeat = \"taskType in $ctrl.columns\">\r\n        <h2 class=\"text-center\">{{::taskType.name}}</h2>\r\n        <div ng-repeat = \"el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' \" class =\"well\">\r\n            <div class = \"pull-right card-icons\">\r\n                <a ng-click = \"$ctrl.deleteItem(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-trash\"></i>\r\n                </a>\r\n                <a ng-click = \"$ctrl.upgadeItems(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-pencil\"></i>\r\n                </a>\r\n            </div>\r\n            <h4> {{el.name || \"No name\"}}</h4>\r\n            <p> {{ el.description || 'No description' }} </p>\r\n<!--TODO    <p> Author </p> -->\r\n            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveLeft(el)\" ng-hide = \"taskType.id === 0\" >\r\n                    <i class=\"glyphicon glyphicon-chevron-left\"></i>\r\n                </button>\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveRight(el)\" ng-hide = \"taskType.id === $ctrl.columns.length - 1\">\r\n                    <i class=\"glyphicon glyphicon-chevron-right\"></i>\r\n                </button>\r\n            </div>\r\n        </div>\r\n        <p> Total: {{quontity.length}}</p>\r\n    </div>\r\n</div>\r\n\r\n";
 
 /***/ }),
 /* 37 */
