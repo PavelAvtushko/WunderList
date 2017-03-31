@@ -1,19 +1,12 @@
-import {URL} from '../../constants.js';
-
 class tasksFormController {
-    constructor($http, $location, $window, localstorageManager) {
-        //console.log('tasksFormController...');
+    constructor($location) {
         this.description;
         this.title;
-        this.data;
-        this.columns;
         this.columnID = 0;
-        this.$http = $http;
         this.$location = $location;
-        this.localstorage = localstorageManager;
     }
  
-    sendData(userName) {
+    sendData() {
         let newData = {
             "name": this.title,
             "status": this.columnID || "0",
@@ -22,28 +15,22 @@ class tasksFormController {
             "id": Date.now()
         };
 
-        this.$http.put(URL + '?user=' + this.user, newData).then(obj => {
-            this.data.push(obj.data);
-        });
+        this.parent.sendNewData(newData);
         this.description = null;
         this.title = null;
         this.columnID = 0;
-        //event.preventDefault();
     }
 
     deleteTasks() {
-        this.$http.delete(URL + '?user=' + this.user)
-            .then(res => {
-                this.data.length = 0;
-            });
+        this.parent.deleteTasks();
         this.$location.path("/Home/Tasks");
     }
 
-
-
-    
+    isEmpty(){
+        return this.parent.isEmpty();
+    }
 }
 
-tasksFormController.$inject = ['$http', '$location', '$window' , 'localstorageManager'];
+tasksFormController.$inject = ['$location'];
 
 export default tasksFormController;

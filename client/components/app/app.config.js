@@ -1,6 +1,4 @@
-// import aboutHTML from '../about/about.template.html';
-
-let routing = [
+const routing = [
     '$stateProvider',
     '$urlRouterProvider',
     function($stateProvider, $urlRouterProvider) {
@@ -9,7 +7,7 @@ let routing = [
             .state({
                 name: 'Home.Tasks',
                 url: '/Tasks',
-                template: '<home columns = "$ctrl.columns" data = "$ctrl.data" user = "$ctrl.userName"></home>'
+                template: '<home columns = "$ctrl.columns" data = "$ctrl.data"></home>'
             })
             .state({
                 name: 'Home',
@@ -19,7 +17,7 @@ let routing = [
             .state({
                 name: 'Home.AddNew',
                 url: '/AddNew',
-                template: '<tasks-form columns = "$ctrl.columns" data = "$ctrl.data" user = "$ctrl.userName"></tasks-form>'
+                template: '<tasks-form columns = "$ctrl.columns"></tasks-form>'
             })
             .state({
                 name: 'Home.Photo',

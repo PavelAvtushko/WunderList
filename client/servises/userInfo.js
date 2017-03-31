@@ -2,7 +2,6 @@ class UserInfo {
     constructor(){
         this._name;
         // this._password;
-      //  console.log('userManager...');
     }
 
     get name() {

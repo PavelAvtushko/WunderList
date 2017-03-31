@@ -11,13 +11,11 @@ class LogInController {
         if (!user) { 
             return;
         }
-        
         this.$http.post(URL, {userName: user}).then((data) => {
             this.userInfo.name = data.data.name;
             this.$location.path("/Home/Tasks");
         });
     }
-    
 }
 
 LogInController.$inject = ['$http', '$location', 'userInfo'];

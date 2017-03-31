@@ -1,6 +1,5 @@
 import EXIF from 'exif-js';
 
-
 export default class ExifDataManager{
 
     extractGPSData(img) {

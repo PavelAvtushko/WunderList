@@ -5,11 +5,12 @@ import './home.style.css';
 let homeComponent = {
     template,
     controller,
-    // replace: true,
     bindings: {
         columns: '<',
-        data: '=',
-        user: '<'
+        data: '<',
+    },
+    require: {
+        parent: "^app"
     }
 };
 

@@ -1,3 +1,5 @@
+const FAKE_COORD = {x:38.90983333333333, y:1.4386666666666668};
+
 import angular from 'angular';
 import uirouter from 'angular-ui-router';
 import 'jquery';
@@ -10,11 +12,11 @@ import HomeComponent from './components/home/home.component';
 import LogInComponent from './components/login/login.component';
 import PhotoComponent from './components/photo/photo.component';
 import TasksFormComponent from './components/tasksForm/tasksForm.component';
-import LocalstorageManager from './servises/LocalstorageManager.js';
+import ServerManager from './servises/serverManager.js';
 import ExifDataManager from './servises/exifDataManager.js';
 import UserInfo from './servises/userInfo.js';
 import MapManager from './servises/mapManager.js';
-
+// import LocalstorageManager from './servises/LocalstorageManager.js';
 
 const app = angular.module('app', [uirouter]);
 
@@ -30,7 +32,7 @@ app.component('tasksForm', TasksFormComponent);
 
 app.component('logIn', LogInComponent);
 
-app.service('localstorageManager', LocalstorageManager);
+app.service('serverManager', ServerManager);
 
 app.service('userInfo', UserInfo);
 
@@ -39,11 +41,12 @@ app.factory('exifDataManager', () => {
 });
 
 app.factory('mapManager', () => {
-    return new MapManager('#googleMap', fakeCoord);
+    return new MapManager('#googleMap', FAKE_COORD);
 });
 
 app.config(routing);
 
+// app.service('localstorageManager', LocalstorageManager);
 
 //angular start
 angular.element(document).ready(() => {

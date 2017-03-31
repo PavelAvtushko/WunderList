@@ -388,11 +388,8 @@ var URL = '/tasks/';
 
 var COLUMNS = [{ id: 0, name: 'Todo' }, { id: 1, name: 'In progress' }, { id: 2, name: 'Test' }, { id: 3, name: 'Done' }];
 
-var FAKE_COORD = { x: 38.90983333333333, y: 1.4386666666666668 };
-
 exports.URL = URL;
 exports.COLUMNS = COLUMNS;
-exports.FAKE_COORD = FAKE_COORD;
 
 /***/ }),
 /* 3 */
@@ -10711,11 +10708,11 @@ var _tasksForm = __webpack_require__(21);
 
 var _tasksForm2 = _interopRequireDefault(_tasksForm);
 
-var _LocalstorageManager = __webpack_require__(23);
+var _serverManager = __webpack_require__(25);
 
-var _LocalstorageManager2 = _interopRequireDefault(_LocalstorageManager);
+var _serverManager2 = _interopRequireDefault(_serverManager);
 
-var _exifDataManager = __webpack_require__(24);
+var _exifDataManager = __webpack_require__(23);
 
 var _exifDataManager2 = _interopRequireDefault(_exifDataManager);
 
@@ -10723,11 +10720,15 @@ var _userInfo = __webpack_require__(26);
 
 var _userInfo2 = _interopRequireDefault(_userInfo);
 
-var _mapManager = __webpack_require__(25);
+var _mapManager = __webpack_require__(24);
 
 var _mapManager2 = _interopRequireDefault(_mapManager);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var FAKE_COORD = { x: 38.90983333333333, y: 1.4386666666666668 };
+
+// import LocalstorageManager from './servises/LocalstorageManager.js';
 
 var app = _angular2.default.module('app', [_angularUiRouter2.default]);
 
@@ -10743,7 +10744,7 @@ app.component('tasksForm', _tasksForm2.default);
 
 app.component('logIn', _login2.default);
 
-app.service('localstorageManager', _LocalstorageManager2.default);
+app.service('serverManager', _serverManager2.default);
 
 app.service('userInfo', _userInfo2.default);
 
@@ -10752,10 +10753,12 @@ app.factory('exifDataManager', function () {
 });
 
 app.factory('mapManager', function () {
-    return new _mapManager2.default('#googleMap', _constants2.default);
+    return new _mapManager2.default('#googleMap', FAKE_COORD);
 });
 
 app.config(_appConfig2.default);
+
+// app.service('localstorageManager', LocalstorageManager);
 
 //angular start
 _angular2.default.element(document).ready(function () {
@@ -48849,14 +48852,12 @@ exports.default = appComponent;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-// import aboutHTML from '../about/about.template.html';
-
 var routing = ['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
     $stateProvider.state({
         name: 'Home.Tasks',
         url: '/Tasks',
-        template: '<home columns = "$ctrl.columns" data = "$ctrl.data" user = "$ctrl.userName"></home>'
+        template: '<home columns = "$ctrl.columns" data = "$ctrl.data"></home>'
     }).state({
         name: 'Home',
         url: '/Home',
@@ -48864,7 +48865,7 @@ var routing = ['$stateProvider', '$urlRouterProvider', function ($stateProvider,
     }).state({
         name: 'Home.AddNew',
         url: '/AddNew',
-        template: '<tasks-form columns = "$ctrl.columns" data = "$ctrl.data" user = "$ctrl.userName"></tasks-form>'
+        template: '<tasks-form columns = "$ctrl.columns"></tasks-form>'
     }).state({
         name: 'Home.Photo',
         url: '/Photo',
@@ -48889,29 +48890,88 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _constants = __webpack_require__(2);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var AppController = function AppController($http, $location, localstorageManager, userInfo) {
-    var _this = this;
+var AppController = function () {
+    function AppController(serverManager, userInfo, $location) {
+        _classCallCheck(this, AppController);
 
-    _classCallCheck(this, AppController);
-
-    if (!userInfo.name) {
-        $location.path("/");
+        if (!userInfo.name) {
+            $location.path("/");
+        }
+        this.columns = _constants.COLUMNS;
+        this.userName = userInfo.name || 'none';
+        this.data = [];
+        this.serverManager = serverManager;
+        this.getData(this.userName);
     }
-    this.columns = _constants.COLUMNS;
-    this.userName = userInfo.name || 'none';
-    this.data = [];
-    $http.get(_constants.URL + '?user=' + userInfo.name).then(function (obj) {
-        _this.data = obj.data;
-        localstorageManager.setObject('wunderList', obj.data);
-    });
-    // console.log('AppController...');
-};
 
-AppController.$inject = ['$http', '$location', 'localstorageManager', 'userInfo'];
+    _createClass(AppController, [{
+        key: 'isEmpty',
+        value: function isEmpty() {
+            return !this.data.length;
+        }
+    }, {
+        key: 'getData',
+        value: function getData(user) {
+            var _this = this;
+
+            this.serverManager.getData(user, this.userName).then(function (obj) {
+                _this.data = obj.data;
+            });
+        }
+    }, {
+        key: 'changeTaskPriority',
+        value: function changeTaskPriority(task, direction) {
+            direction ? task.status++ : task.status--;
+            task.lastModifyDate = Date.now();
+            this.serverManager.changeTaskPriority(task, this.userName).then(function (obj) {
+                return console.log(obj.status);
+            });
+            return;
+        }
+    }, {
+        key: 'deleteCurrentTask',
+        value: function deleteCurrentTask(task) {
+            var _this2 = this;
+
+            this.serverManager.deleteCurrentTask(task, this.userName).then(function (obj) {
+                var index = _this2.data.findIndex(function (item) {
+                    return item.id === task.id;
+                });
+                _this2.data.splice(index, 1);
+                console.log(obj.status);
+            });
+            return;
+        }
+    }, {
+        key: 'sendNewData',
+        value: function sendNewData(newData) {
+            var _this3 = this;
+
+            this.serverManager.sendNewData(newData, this.userName).then(function (obj) {
+                _this3.data.push(obj.data);
+            });
+        }
+    }, {
+        key: 'deleteTasks',
+        value: function deleteTasks() {
+            var _this4 = this;
+
+            this.serverManager.deleteTasks(this.userName).then(function () {
+                _this4.data.length = 0;
+            });
+        }
+    }]);
+
+    return AppController;
+}();
+
+AppController.$inject = ['serverManager', 'userInfo', '$location'];
 
 exports.default = AppController;
 
@@ -48941,11 +49001,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var homeComponent = {
     template: _homeTemplate2.default,
     controller: _home2.default,
-    // replace: true,
     bindings: {
         columns: '<',
-        data: '=',
-        user: '<'
+        data: '<'
+    },
+    require: {
+        parent: "^app"
     }
 };
 
@@ -48964,71 +49025,38 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _constants = __webpack_require__(2);
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var HomeController = function () {
-    function HomeController($http) {
+    function HomeController() {
         _classCallCheck(this, HomeController);
-
-        this.$http = $http;
-        this.columns;
-        this.data;
-        //console.log('HomeController...');
     }
 
     _createClass(HomeController, [{
-        key: '_moveTask',
-        value: function _moveTask(task, direction) {
-            direction ? task.status++ : task.status--;
-            task.lastModifyDate = Date.now();
-            this.$http.put(_constants.URL + task.id + '?user=' + this.user, task).then(function (obj) {
-                return console.log(obj.status);
-            });
-            return;
-        }
-    }, {
-        key: 'moveLeft',
+        key: "moveLeft",
         value: function moveLeft(task) {
             if (task.status > 0) {
-                this._moveTask(task, false);
+                this.parent.changeTaskPriority(task, false);
             }
             return;
         }
     }, {
-        key: 'moveRight',
+        key: "moveRight",
         value: function moveRight(task) {
             if (task.status < this.columns.length - 1) {
-                this._moveTask(task, true);
+                this.parent.changeTaskPriority(task, true);
             }
             return;
         }
     }, {
-        key: 'deleteItem',
+        key: "deleteItem",
         value: function deleteItem(task) {
-            var _this = this;
-
-            this.$http.delete(_constants.URL + task.id + '?user=' + this.user).then(function (obj) {
-                var index = _this.data.findIndex(function (item) {
-                    return item.id === task.id;
-                });
-                _this.data.splice(index, 1);
-                console.log(obj.status);
-            });
-            return;
-        }
-    }, {
-        key: 'upgadeItems',
-        value: function upgadeItems(el) {
-            console.log(el);
+            this.parent.deleteCurrentTask(task);
         }
     }]);
 
     return HomeController;
 }();
-
-HomeController.$inject = ['$http'];
 
 exports.default = HomeController;
 
@@ -49066,7 +49094,6 @@ var LogInController = function () {
             if (!user) {
                 return;
             }
-
             this.$http.post(_constants.URL, { userName: user }).then(function (data) {
                 _this.userInfo.name = data.data.name;
                 _this.$location.path("/Home/Tasks");
@@ -49166,14 +49193,12 @@ var NavbarController = function () {
         _classCallCheck(this, NavbarController);
 
         this.userInfo = userInfo;
-        //  console.log('NavbarController...');
     }
 
     _createClass(NavbarController, [{
         key: 'deleteUser',
         value: function deleteUser() {
             this.userInfo.setDefault();
-            //console.log(this.userInfo.name);
         }
     }]);
 
@@ -49395,11 +49420,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var tasksFormComponent = {
     template: _tasksFormTemplate2.default,
     controller: _tasksForm2.default,
-    // replace: true,
     bindings: {
-        columns: '<',
-        data: '=',
-        user: '<'
+        columns: '<'
+    },
+    require: {
+        parent: "^app"
     }
 };
 
@@ -49418,30 +49443,21 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _constants = __webpack_require__(2);
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var tasksFormController = function () {
-    function tasksFormController($http, $location, $window, localstorageManager) {
+    function tasksFormController($location) {
         _classCallCheck(this, tasksFormController);
 
-        //console.log('tasksFormController...');
         this.description;
         this.title;
-        this.data;
-        this.columns;
         this.columnID = 0;
-        this.$http = $http;
         this.$location = $location;
-        this.localstorage = localstorageManager;
     }
 
     _createClass(tasksFormController, [{
         key: "sendData",
-        value: function sendData(userName) {
-            var _this = this;
-
+        value: function sendData() {
             var newData = {
                 "name": this.title,
                 "status": this.columnID || "0",
@@ -49450,77 +49466,33 @@ var tasksFormController = function () {
                 "id": Date.now()
             };
 
-            this.$http.put(_constants.URL + '?user=' + this.user, newData).then(function (obj) {
-                _this.data.push(obj.data);
-            });
+            this.parent.sendNewData(newData);
             this.description = null;
             this.title = null;
             this.columnID = 0;
-            //event.preventDefault();
         }
     }, {
         key: "deleteTasks",
         value: function deleteTasks() {
-            var _this2 = this;
-
-            this.$http.delete(_constants.URL + '?user=' + this.user).then(function (res) {
-                _this2.data.length = 0;
-            });
+            this.parent.deleteTasks();
             this.$location.path("/Home/Tasks");
+        }
+    }, {
+        key: "isEmpty",
+        value: function isEmpty() {
+            return this.parent.isEmpty();
         }
     }]);
 
     return tasksFormController;
 }();
 
-tasksFormController.$inject = ['$http', '$location', '$window', 'localstorageManager'];
+tasksFormController.$inject = ['$location'];
 
 exports.default = tasksFormController;
 
 /***/ }),
 /* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var LocalstorageManager = function () {
-    function LocalstorageManager($window) {
-        _classCallCheck(this, LocalstorageManager);
-
-        //console.log('LocalstorageManager');
-        this.$window = $window;
-    }
-
-    _createClass(LocalstorageManager, [{
-        key: 'setObject',
-        value: function setObject(key, value) {
-            this.$window.localStorage[key] = JSON.stringify(value);
-        }
-    }, {
-        key: 'getObject',
-        value: function getObject(key) {
-            return JSON.parse(this.$window.localStorage[key] || '{}');
-        }
-    }]);
-
-    return LocalstorageManager;
-}();
-
-LocalstorageManager.$inject = ['$window'];
-
-exports.default = LocalstorageManager;
-
-/***/ }),
-/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49581,7 +49553,7 @@ var ExifDataManager = function () {
 exports.default = ExifDataManager;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49635,6 +49607,64 @@ var MapManager = function () {
 exports.default = MapManager;
 
 /***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _constants = __webpack_require__(2);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var serverManager = function () {
+    function serverManager($http) {
+        _classCallCheck(this, serverManager);
+
+        this.$http = $http;
+    }
+
+    _createClass(serverManager, [{
+        key: 'getData',
+        value: function getData(user) {
+            return this.$http.get(_constants.URL + '?user=' + user);
+        }
+    }, {
+        key: 'changeTaskPriority',
+        value: function changeTaskPriority(task, user) {
+            return this.$http.put(_constants.URL + task.id + '?user=' + user, task);
+        }
+    }, {
+        key: 'deleteCurrentTask',
+        value: function deleteCurrentTask(task, user) {
+            return this.$http.delete(_constants.URL + task.id + '?user=' + user);
+        }
+    }, {
+        key: 'sendNewData',
+        value: function sendNewData(data, user) {
+            return this.$http.put(_constants.URL + '?user=' + user, data);
+        }
+    }, {
+        key: 'deleteTasks',
+        value: function deleteTasks(user) {
+            return this.$http.delete(_constants.URL + '?user=' + user);
+        }
+    }]);
+
+    return serverManager;
+}();
+
+serverManager.$inject = ['$http'];
+
+exports.default = serverManager;
+
+/***/ }),
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49655,7 +49685,6 @@ var UserInfo = function () {
 
         this._name;
         // this._password;
-        //  console.log('userManager...');
     }
 
     _createClass(UserInfo, [{
@@ -49703,7 +49732,7 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, ".well {\r\n    padding: 5px 5px;\r\n}\r\n\r\n.btn {\r\n    padding: 2px 20px;\r\n}\r\n\r\n.card h4 {\r\n    margin-top: 0;\r\n    margin-right: 40px;\r\n}\r\n\r\n.card h2 {\r\n    padding-bottom: 10px;\r\n    border-bottom: 1px solid grey;\r\n}\r\n\r\n.card-icons a {\r\n    margin-left: 5px;\r\n    cursor: pointer; \r\n    position: relative;\r\n}\r\n\r\n.panel-default {\r\n    border-radius: 0;\r\n}\r\n\r\n/*\r\n.card textarea {\r\n    margin-top: 0;\r\n    max-width: 100%;\r\n    min-width: 100%;\r\n    margin-bottom: 5px;\r\n    padding: 0;\r\n    background-color: transparent;\r\n    border: none;\r\n}*/", ""]);
+exports.push([module.i, ".well {\r\n    padding: 5px 5px;\r\n}\r\n\r\n.btn {\r\n    padding: 2px 20px;\r\n}\r\n\r\n.card h4 {\r\n    margin-top: 0;\r\n    margin-right: 40px;\r\n}\r\n\r\n.card h2 {\r\n    padding-bottom: 10px;\r\n    border-bottom: 1px solid grey;\r\n}\r\n\r\n.card-icons a {\r\n    margin-left: 5px;\r\n    cursor: pointer; \r\n    position: relative;\r\n}\r\n\r\n.panel-default {\r\n    border-radius: 0;\r\n}\r\n\r\n/*\r\nTODO\r\n.card textarea {\r\n    margin-top: 0;\r\n    max-width: 100%;\r\n    min-width: 100%;\r\n    margin-bottom: 5px;\r\n    padding: 0;\r\n    background-color: transparent;\r\n    border: none;\r\n}*/", ""]);
 
 // exports
 
@@ -50600,7 +50629,7 @@ module.exports = "<div class=\"wrapper container\">\r\n    <p class = \"pull-lef
 /* 36 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"card\">\r\n    <div class = \"col-md-3 panel panel-default\" ng-repeat = \"taskType in $ctrl.columns\">\r\n        <h2 class=\"text-center\">{{::taskType.name}}</h2>\r\n        <div ng-repeat = \"el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' \" class =\"well\">\r\n            <div class = \"pull-right card-icons\">\r\n                <a ng-click = \"$ctrl.deleteItem(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-trash\"></i>\r\n                </a>\r\n                <a ng-click = \"$ctrl.upgadeItems(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-pencil\"></i>\r\n                </a>\r\n            </div>\r\n            <h4> {{el.name || \"No name\"}}</h4>\r\n            <p> {{ el.description || 'No description' }} </p>\r\n<!--TODO    <p> Author </p> -->\r\n            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveLeft(el)\" ng-hide = \"taskType.id === 0\" >\r\n                    <i class=\"glyphicon glyphicon-chevron-left\"></i>\r\n                </button>\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveRight(el)\" ng-hide = \"taskType.id === $ctrl.columns.length - 1\">\r\n                    <i class=\"glyphicon glyphicon-chevron-right\"></i>\r\n                </button>\r\n            </div>\r\n        </div>\r\n        <p> Total: {{quontity.length}}</p>\r\n    </div>\r\n</div>\r\n\r\n";
+module.exports = "<div class=\"card\">\r\n    <div class = \"col-md-3 panel panel-default\" ng-repeat = \"taskType in $ctrl.columns\">\r\n        <h2 class=\"text-center\">{{::taskType.name}}</h2>\r\n        <div class =\"well\" ng-repeat = \"el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' \" >\r\n            <div class = \"pull-right card-icons\">\r\n                <a ng-click = \"$ctrl.deleteItem(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-trash\"></i>\r\n                </a>\r\n                <a ng-click = \"$ctrl.upgadeItems(el)\" class = \"pull-right\">\r\n                    <i class =\"glyphicon glyphicon-pencil\"></i>\r\n                </a>\r\n            </div>\r\n            <h4> {{el.name || \"No name\"}}</h4>\r\n            <p> {{ el.description || 'No description' }} </p>\r\n<!--TODO    <p> Author </p> -->\r\n            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveLeft(el)\" ng-hide = \"taskType.id === 0\" >\r\n                    <i class=\"glyphicon glyphicon-chevron-left\"></i>\r\n                </button>\r\n                <button type=\"button\" class=\"btn btn-default\" ng-click = \"$ctrl.moveRight(el)\" ng-hide = \"taskType.id === $ctrl.columns.length - 1\">\r\n                    <i class=\"glyphicon glyphicon-chevron-right\"></i>\r\n                </button>\r\n            </div>\r\n        </div>\r\n        <p> Total: {{quontity.length}}</p>\r\n    </div>\r\n</div>\r\n\r\n";
 
 /***/ }),
 /* 37 */
@@ -50612,7 +50641,7 @@ module.exports = "<h1>Custom WunderList application</h1>\r\n<form class=\"form-g
 /* 38 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class =\"row navbar-default\">\r\n    <ul class=\"nav navbar-nav navigation\">\r\n        <li><a ui-sref=\".Tasks\" ui-sref-active=\"active\">Tasks<span class=\"sr-only\">(current)</span></a></li>\r\n        <li><a ui-sref=\".AddNew\" ui-sref-active=\"active\">Add New</a></li>\r\n        <li><a ui-sref=\".Photo\" ui-sref-active=\"active\">My photo</a></li>\r\n        <li><a href=\"/\" ng-click = \"$ctrl.deleteUser()\">Exit</a></li>\r\n    </ul>\r\n</div>\r\n";
+module.exports = "<div class =\"row navbar-default\">\r\n    <ul class=\"nav navbar-nav navigation\">\r\n        <li><a ui-sref = \".Tasks\" ui-sref-active = \"active\">Tasks<span class=\"sr-only\">(current)</span></a></li>\r\n        <li><a ui-sref = \".AddNew\" ui-sref-active = \"active\">Add New</a></li>\r\n        <li><a ui-sref = \".Photo\" ui-sref-active = \"active\">My photo</a></li>\r\n        <li><a href = \"/\" ng-click = \"$ctrl.deleteUser()\">Exit</a></li>\r\n    </ul>\r\n</div>\r\n";
 
 /***/ }),
 /* 39 */
@@ -50624,7 +50653,7 @@ module.exports = "<div class=\"map\">\r\n        <header class=\"row\">\r\n     
 /* 40 */
 /***/ (function(module, exports) {
 
-module.exports = "<h2 >Create new task</h2>\r\n<form class=\"form-horizontal\" ng-submit = \"$ctrl.sendData($ctrl.user)\" name = \"addTask\" novalidate>\r\n    <div class=\"form-group\">\r\n    <label for=\"inputTitle\" class=\"col-sm-2 control-label\">Title</label>\r\n    <div class=\"col-sm-6\">\r\n      <input type=\"text\" class=\"form-control\" id=\"inputTitle\" placeholder=\"Title\" ng-model = \"$ctrl.title\" name = \"taskTitle\">\r\n    </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <label for=\"inputDescription\" class=\"col-sm-2 control-label\">Description</label>\r\n        <div class=\"col-sm-6\">\r\n          <textarea type=\"text\" class=\"form-control\" rows=\"4\" id=\"inputDescription\" placeholder=\"Description\" ng-model = \"$ctrl.description\"></textarea>\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <div class=\"col-sm-6 col-sm-offset-2\">\r\n            <select ng-options=\"el.id as el.name for el in $ctrl.columns\" ng-model=\"$ctrl.columnID\" class=\"form-control\"></select>\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group \">\r\n    <div class=\"col-sm-6 col-sm-offset-2 clearfix\">\r\n        <input type = \"submit\" value = \"Add new task\" name = \"addNewTask\" class=\"btn btn-info pull-left\" ng-disabled = \"!$ctrl.description || !$ctrl.title\">\r\n        <input id = \"delTasks\" type = \"button\" value = \"Delete all tasks\" ng-click = \"$ctrl.deleteTasks()\" name = \"deleteAllTasks\" class=\"btn btn-danger pull-left\" ng-disabled = \"!$ctrl.data.length\">\r\n    </div>\r\n    </div>\r\n</form>\r\n";
+module.exports = "<h2 >Create new task</h2>\r\n<form class=\"form-horizontal\" ng-submit = \"$ctrl.sendData()\" name = \"addTask\" novalidate>\r\n    <div class=\"form-group\">\r\n    <label for=\"inputTitle\" class=\"col-sm-2 control-label\">Title</label>\r\n    <div class=\"col-sm-6\">\r\n      <input type=\"text\" class=\"form-control\" id=\"inputTitle\" placeholder=\"Title\" ng-model = \"$ctrl.title\" name = \"taskTitle\">\r\n    </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <label for=\"inputDescription\" class=\"col-sm-2 control-label\">Description</label>\r\n        <div class=\"col-sm-6\">\r\n          <textarea type=\"text\" class=\"form-control\" rows=\"4\" id=\"inputDescription\" placeholder=\"Description\" ng-model = \"$ctrl.description\"></textarea>\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <div class=\"col-sm-6 col-sm-offset-2\">\r\n            <select ng-options=\"el.id as el.name for el in $ctrl.columns\" ng-model=\"$ctrl.columnID\" class=\"form-control\"></select>\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group \">\r\n    <div class=\"col-sm-6 col-sm-offset-2 clearfix\">\r\n        <input type = \"submit\" value = \"Add new task\" name = \"addNewTask\" class=\"btn btn-info pull-left\" ng-disabled = \"!$ctrl.description || !$ctrl.title\">\r\n        <input id = \"delTasks\" type = \"button\" value = \"Delete all tasks\" ng-click = \"$ctrl.deleteTasks()\" name = \"deleteAllTasks\" class=\"btn btn-danger pull-left\" ng-disabled = \"$ctrl.isEmpty()\">\r\n    </div>\r\n    </div>\r\n</form>\r\n";
 
 /***/ }),
 /* 41 */

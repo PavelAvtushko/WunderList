@@ -1,7 +1,7 @@
 <div class="card">
     <div class = "col-md-3 panel panel-default" ng-repeat = "taskType in $ctrl.columns">
         <h2 class="text-center">{{::taskType.name}}</h2>
-        <div ng-repeat = "el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' " class ="well">
+        <div class ="well" ng-repeat = "el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' " >
             <div class = "pull-right card-icons">
                 <a ng-click = "$ctrl.deleteItem(el)" class = "pull-right">
                     <i class ="glyphicon glyphicon-trash"></i>

@@ -5,7 +5,6 @@ import './navbar.style.css';
 let NavbarComponent = {
     template,
     controller,
-    // replace: true
 };
 
 export default NavbarComponent;
