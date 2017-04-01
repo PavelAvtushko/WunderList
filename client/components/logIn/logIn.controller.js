@@ -1,9 +1,7 @@
-import {URL} from '../../constants.js';
-
 class LogInController {
-    constructor($http, $location, userInfo) {
+    constructor(requestsManager, $location, userInfo) {
         this.$location = $location;
-        this.$http = $http;
+        this.requestsManager = requestsManager;
         this.userInfo = userInfo;
     }
     
@@ -11,13 +9,14 @@ class LogInController {
         if (!user) { 
             return;
         }
-        this.$http.post(URL, {userName: user}).then((data) => {
+        this.requestsManager.setUser({userName: user})
+            .then((data) => {
             this.userInfo.name = data.data.name;
             this.$location.path("/Home/Tasks");
         });
     }
 }
 
-LogInController.$inject = ['$http', '$location', 'userInfo'];
+LogInController.$inject = ['requestsManager', '$location', 'userInfo'];
 
 export default LogInController;

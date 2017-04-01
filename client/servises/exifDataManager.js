@@ -16,7 +16,7 @@ export default class ExifDataManager{
     }
 
     extractExifData(img) {
-        var allMetaData = EXIF.getAllTags(img);
+        let allMetaData = EXIF.getAllTags(img);
         return JSON.stringify(allMetaData, null, "\t");
     }
 

@@ -1,6 +1,6 @@
 import {URL} from '../constants.js';
 
-class serverManager {
+class requestsManager {
     constructor($http) {
         this.$http = $http;
     }
@@ -25,8 +25,11 @@ class serverManager {
         return this.$http.delete(URL + '?user=' + user);
     }
 
+    setUser(data) {
+        return  this.$http.post(URL, data);
+    }
 }
 
-serverManager.$inject = ['$http'];
+requestsManager.$inject = ['$http'];
 
-export default serverManager;
+export default requestsManager;

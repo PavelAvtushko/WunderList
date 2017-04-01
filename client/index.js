@@ -4,7 +4,6 @@ import angular from 'angular';
 import uirouter from 'angular-ui-router';
 import 'jquery';
 import 'bootstrap/dist/css/bootstrap.css';
-import fakeCoord from './constants';
 import routing from './components/app/app.config.js';
 import AppComponent from './components/app/app.component';
 import NavbarComponent from './components/navbar/navbar.component';
@@ -12,7 +11,7 @@ import HomeComponent from './components/home/home.component';
 import LogInComponent from './components/login/login.component';
 import PhotoComponent from './components/photo/photo.component';
 import TasksFormComponent from './components/tasksForm/tasksForm.component';
-import ServerManager from './servises/serverManager.js';
+import RequestsManager from './servises/requestsManager.js';
 import ExifDataManager from './servises/exifDataManager.js';
 import UserInfo from './servises/userInfo.js';
 import MapManager from './servises/mapManager.js';
@@ -32,7 +31,7 @@ app.component('tasksForm', TasksFormComponent);
 
 app.component('logIn', LogInComponent);
 
-app.service('serverManager', ServerManager);
+app.service('requestsManager', RequestsManager);
 
 app.service('userInfo', UserInfo);
 

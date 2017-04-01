@@ -1,14 +1,14 @@
 import {URL, COLUMNS} from '../../constants.js';
 
 class AppController {
-    constructor(serverManager, userInfo, $location ) {
+    constructor(requestsManager, userInfo, $location ) {
         if (!userInfo.name) {
             $location.path("/");
         }
         this.columns = COLUMNS;
         this.userName = userInfo.name || 'none';
         this.data = [];
-        this.serverManager = serverManager;
+        this.requestsManager = requestsManager;
         this.getData(this.userName);
     }
 
@@ -18,20 +18,20 @@ class AppController {
     }
 
     getData(user) {
-        this.serverManager.getData(user, this.userName)
+        this.requestsManager.getData(user, this.userName)
             .then( obj => { this.data = obj.data;});
     }
 
     changeTaskPriority(task, direction){
         direction ? task.status++ : task.status--;
         task.lastModifyDate = Date.now();
-        this.serverManager.changeTaskPriority(task, this.userName)
+        this.requestsManager.changeTaskPriority(task, this.userName)
             .then( obj => console.log(obj.status));
         return;
     }
 
     deleteCurrentTask(task){
-        this.serverManager.deleteCurrentTask(task, this.userName)
+        this.requestsManager.deleteCurrentTask(task, this.userName)
             .then(obj => {
                 let index = this.data.findIndex(item => item.id === task.id);
                 this.data.splice(index, 1);
@@ -41,20 +41,20 @@ class AppController {
     }
 
     sendNewData(newData) {
-        this.serverManager.sendNewData(newData, this.userName)
+        this.requestsManager.sendNewData(newData, this.userName)
         .then(obj => {
             this.data.push(obj.data);
         });
     }
 
     deleteTasks() {
-        this.serverManager.deleteTasks(this.userName)
+        this.requestsManager.deleteTasks(this.userName)
         .then(() => {
             this.data.length = 0;
         });
     }
 }
 
-AppController.$inject = ['serverManager', 'userInfo', '$location'];
+AppController.$inject = ['requestsManager', 'userInfo', '$location'];
 
 export default AppController;
