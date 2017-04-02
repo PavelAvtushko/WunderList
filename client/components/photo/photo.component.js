@@ -5,7 +5,6 @@ import './photo.style.css';
 let photoComponent = {
     template,
     controller,
-    // replace: true,
 };
 
 export default photoComponent;

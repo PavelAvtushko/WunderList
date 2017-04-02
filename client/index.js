@@ -1,5 +1,3 @@
-const FAKE_COORD = {x:38.90983333333333, y:1.4386666666666668};
-
 import angular from 'angular';
 import uirouter from 'angular-ui-router';
 import 'jquery';
@@ -35,19 +33,15 @@ app.service('requestsManager', RequestsManager);
 
 app.service('userInfo', UserInfo);
 
-app.factory('exifDataManager', () => {
-    return new ExifDataManager();
-});
+app.factory('exifDataManager', () => new ExifDataManager() );
 
-app.factory('mapManager', () => {
-    return new MapManager('#googleMap', FAKE_COORD);
-});
+app.factory('mapManager', () => new MapManager());
 
 app.config(routing);
 
 // app.service('localstorageManager', LocalstorageManager);
 
-//angular start
+//angular bootstrapping
 angular.element(document).ready(() => {
     angular.bootstrap(document, ['app']);
 });

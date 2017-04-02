@@ -1,3 +1,5 @@
+const REDIRECTION_PATH = "/Home/Tasks";
+
 class tasksFormController {
     constructor($location) {
         this.description;
@@ -7,15 +9,21 @@ class tasksFormController {
     }
  
     sendData() {
-        let newData = {
+        this.parent.sendNewData(this.createData());
+        this.reset();
+    }
+
+    createData(){
+        return {
             "name": this.title,
             "status": this.columnID || "0",
             "description": this.description,
             "lastModifyDate": Date.now(),
             "id": Date.now()
         };
+    }
 
-        this.parent.sendNewData(newData);
+    reset() {
         this.description = null;
         this.title = null;
         this.columnID = 0;
@@ -23,7 +31,7 @@ class tasksFormController {
 
     deleteTasks() {
         this.parent.deleteTasks();
-        this.$location.path("/Home/Tasks");
+        this.$location.path(REDIRECTION_PATH);
     }
 
     isEmpty(){

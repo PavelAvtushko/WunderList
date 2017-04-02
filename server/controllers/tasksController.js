@@ -85,12 +85,11 @@ exports.addPhoto = function(req, res) {
 
 
 function createTaskData(req){
-    let newData = {    
+    return {    
             status: req.body.status,
             name: req.body.name,
             lastModifyDate: Date.now(),
             id: req.body.id,
             description: req.body.description
         };
-    return newData;
 }

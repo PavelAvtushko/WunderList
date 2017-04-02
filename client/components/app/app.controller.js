@@ -1,4 +1,4 @@
-import {URL, COLUMNS} from '../../constants.js';
+import {COLUMNS} from './app.constants.js';
 
 class AppController {
     constructor(requestsManager, userInfo, $location ) {
@@ -12,14 +12,13 @@ class AppController {
         this.getData(this.userName);
     }
 
-
     isEmpty(){
         return !this.data.length;
     }
 
     getData(user) {
         this.requestsManager.getData(user, this.userName)
-            .then( obj => { this.data = obj.data;});
+            .then( obj => {this.data = obj.data;});
     }
 
     changeTaskPriority(task, direction){

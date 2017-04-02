@@ -33,14 +33,14 @@ app.put('/tasks/:id', tasksController.updateTask);
 app.post('/tasks/photo', tasksController.addPhoto);
 
 
-//connects to the database and starts the server
-// db.connect('mongodb://localhost:27017/myToDo', function(err){
-    db.connect('mongodb://pasha:pashawunderlist@ds127190.mlab.com:27190/wunderlist',
+//connect to the database and start the server
+// db.connect('mongodb://localhost:27017/myToDo',
+db.connect('mongodb://pasha:pashawunderlist@ds127190.mlab.com:27190/wunderlist',
     function(err){
         if(err) {
             return console.log(err);
         }
     app.listen(8080, function(){
-        console.log('connection...');
+        console.log('connection is ready...');
     });
 });

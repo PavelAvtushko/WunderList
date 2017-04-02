@@ -20,6 +20,7 @@ exports.connect = function (url, callback) {
     });
 };
 
+//get access to the connection
 exports.get = function () {
     return state.db;
 };

@@ -1,7 +1,6 @@
 class UserInfo {
     constructor(){
         this._name;
-        // this._password;
     }
 
     get name() {

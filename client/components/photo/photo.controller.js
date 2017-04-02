@@ -1,5 +1,6 @@
 import {URL} from '../../constants.js';
 import {FILE_INPUT_SELECTOR, VIEW_PATH_INPUT_SELECTOR, MAP_SCALE, MAP_SELECTOR} from './photo.constants.js';
+import $ from 'jquery';
 
 const IMAGE_COLLECTION = [];
 
@@ -30,7 +31,9 @@ class PhotoController {
 
     browse() {
         $(FILE_INPUT_SELECTOR).trigger('click'); //искусственно вызывает клик;
-        $(FILE_INPUT_SELECTOR).on('change', () => {this.fileChange()});
+        $(FILE_INPUT_SELECTOR).on('change', () => {
+            this.fileChange();
+        });
     }
 
     fileChange() {
@@ -49,15 +52,6 @@ class PhotoController {
         }, 0);
     }
 
-    // showMap(el) {
-    //     if (this.mapManager.map && this.currentImage) {
-    //         return true;
-    //     }
-    //     else {
-    //         return false;
-    //     }
-    // }
-
     loadFile() {
         const fileCollection = document.querySelector(FILE_INPUT_SELECTOR);
         if (!fileCollection.files.length || !fileCollection.files[0].type.match('image/jpeg')){
@@ -66,7 +60,7 @@ class PhotoController {
         }
 
         const file = fileCollection.files[0];
-        this.addFileToCollection(file);//addFileToCollection();
+        this.addFileToCollection(file);
         $(FILE_INPUT_SELECTOR).val('');
         $(VIEW_PATH_INPUT_SELECTOR).val('');
     }
@@ -79,17 +73,17 @@ class PhotoController {
             reader.readAsDataURL(file);
         }
         reader.onloadend = function (event) {
-            console.log(event);
+          //  console.log(event);
             that.$timeout(() => {
                 image = new NewImage(event.target.result);
                 image.coord = that.exifDataManager.extractGPSData(image.img);
                 image.exifData = that.exifDataManager.extractExifData(image.img);
-                that.$http.post(URL + 'photo'+ '?user=' + that.userInfo.name, {'as': image.src}).then(obj => {
+                //that.$http.post(URL + 'photo'+ '?user=' + that.userInfo.name, {'as': image.src}).then(obj => {
                     //that.imageCollection.push(obj.data.as);
-                    console.log(obj.data);
+                  //  console.log(obj.data);
                     // this.data = obj.data;
                     // localstorageManager.setObject('wunderList', obj.data);
-                });
+                //});
                 that.imageCollection.push(image);
             }, 0);
 
