@@ -11,9 +11,9 @@ class LogInController {
         }
         this.requestsManager.setUser({userName: user})
             .then((data) => {
-            this.userInfo.name = data.data.name;
-            this.$location.path("/Home/Tasks");
-        });
+                this.userInfo.name = data.data.name;
+                this.$location.path("/Home/Tasks");
+            });
     }
 }
 

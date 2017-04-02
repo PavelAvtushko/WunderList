@@ -1,7 +1,7 @@
+// const path = require('path');
 const express = require ('express');
 const bodyParser = require('body-parser');
 const app = express();
-// const path = require('path');
 const tasksController = require('./server/controllers/tasksController');
 const db = require('./server/db');
 

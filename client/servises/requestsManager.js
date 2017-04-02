@@ -1,8 +1,9 @@
 import {URL} from '../constants.js';
 
 class requestsManager {
-    constructor($http) {
+    constructor($http, $timeout) {
         this.$http = $http;
+        this.$timeout = $timeout;
     }
 
     getData(user){
@@ -28,8 +29,31 @@ class requestsManager {
     setUser(data) {
         return  this.$http.post(URL, data);
     }
+
+    updateTasksArray(data, user, actualStatus){
+        let that = this;
+        this.deleteTasks(user)
+            .then(() => {
+                const promises = [];
+                for (let i = 0; i < data.length; ++i) {
+                    promises.push(that.sendNewData(data[i], user));
+                }
+                Promise
+                    .all(promises)
+                    .then(() => {
+                        console.log('statusChange');
+                        actualStatus = true;
+                    });
+            })
+            .catch(() => {
+                that.$timeout( () => {
+                    console.log('timeout');
+                    that.updateTasksArray(data, user, actualStatus);
+                }, 5000);
+            });
+    }
 }
 
-requestsManager.$inject = ['$http'];
+requestsManager.$inject = ['$http', '$timeout'];
 
 export default requestsManager;

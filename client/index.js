@@ -13,7 +13,7 @@ import RequestsManager from './servises/requestsManager.js';
 import ExifDataManager from './servises/exifDataManager.js';
 import UserInfo from './servises/userInfo.js';
 import MapManager from './servises/mapManager.js';
-// import LocalstorageManager from './servises/LocalstorageManager.js';
+import LocalstorageManager from './servises/LocalstorageManager.js';
 
 const app = angular.module('app', [uirouter]);
 
@@ -39,7 +39,7 @@ app.factory('mapManager', () => new MapManager());
 
 app.config(routing);
 
-// app.service('localstorageManager', LocalstorageManager);
+app.service('localstorageManager', LocalstorageManager);
 
 //angular bootstrapping
 angular.element(document).ready(() => {

@@ -4,11 +4,19 @@ class LocalstorageManager {
     }
 
     setObject(key, value) {
-        this.$window.localStorage[key] = JSON.stringify(value);
+        if (this.$window.localStorage) {
+            this.$window.localStorage[key] = JSON.stringify(value);
+        } 
     }
 
     getObject(key) {
-        return JSON.parse(this.$window.localStorage[key] || '{}');
+        if (this.$window.localStorage) {
+            return JSON.parse(this.$window.localStorage[key] || '[]');
+        }
+    }
+
+    clear(key){
+        this.setObject(key, "[]");
     }
 }
 
