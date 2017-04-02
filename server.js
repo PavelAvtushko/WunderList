@@ -1,7 +1,7 @@
+// const path = require('path');
 const express = require ('express');
 const bodyParser = require('body-parser');
 const app = express();
-const path = require('path');
 const tasksController = require('./server/controllers/tasksController');
 const db = require('./server/db');
 
@@ -11,30 +11,36 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname));
 
 
-//возвращает коллекцию из базы данных при загрузке приложения
+//returns a new collection from the database 
 app.get('/tasks', tasksController.getAllTasks);
 
-//принимает новую запись в базу данных
+//checks an user's personal data and gives access
+app.post('/tasks', tasksController.logUser);
+
+//pushs a new data into the database 
 app.put('/tasks', tasksController.putNewTask);
 
-//принимает id элемента  и удаляет его из базы
+//accepts an id of task and removes this task from the database
 app.delete('/tasks/:id', tasksController.deleteById);
 
-//удаляет всю коллекцию
+//removes an user's collection
 app.delete('/tasks', tasksController.deleteAllTasks);
 
-
-//принимает idэлемента  и записывает его смещение в базу
+//accepts an id of task (with new position data) and updates the database
 app.put('/tasks/:id', tasksController.updateTask);
 
+//TODO  - work with graphic data
+app.post('/tasks/photo', tasksController.addPhoto);
 
-//подключается в базе данных и запускает сервер
-db.connect('mongodb://localhost:27017/myToDo', function(err){
-    if(err) {
-        return console.log(err);
-    }
-    // db = dataBase;
+
+//connect to the database and start the server
+// db.connect('mongodb://localhost:27017/myToDo',
+db.connect('mongodb://pasha:pashawunderlist@ds127190.mlab.com:27190/wunderlist',
+    function(err){
+        if(err) {
+            return console.log(err);
+        }
     app.listen(8080, function(){
-        console.log('connection...');
-    })
+        console.log('connection is ready...');
+    });
 });

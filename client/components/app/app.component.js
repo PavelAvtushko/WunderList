@@ -5,7 +5,6 @@ import './app.style.css';
 let appComponent = {
     template,
     controller,
-    replace: true
 };
 
 export default appComponent;

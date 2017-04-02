@@ -1,26 +1,26 @@
 const MongoClient = require('mongodb').MongoClient;
 
-//переменная в которой хранятся подключения
-let state = {
-    db:null
+const state = {
+    db: null
 };
 
-//при вызове метода проверяется есть ли уже подключение
-//если его нет, то оно создается и записывается в state.db
-exports.connect = function (url, done) {
+//checks if the database connection exists
+//if not, the method creates a new connection an writes it to state.db
+exports.connect = function (url, callback) {
     if (state.db) {
-        return done();
-    };
+        return callback();
+    }
     
     MongoClient.connect(url, function(err, db) {
         if (err) {
-            return done(err);
+            return callback(err);
         }
         state.db = db;
-        done();
+        callback();
     });
 };
 
+//get access to the connection
 exports.get = function () {
     return state.db;
 };

@@ -1,97 +1,39 @@
-.columns h2 {
-    text-align: center;
-    text-transform: uppercase;
-    color: rgba(26, 44, 15, 0.97);
-    font-size: 15px;
+.well {
+    padding: 5px 5px;
 }
 
-.columns {
-    vertical-align: top;
-    width: 22%;
-    min-width: 100px;
-    background: #7ca39e;
-    float: left;
-    margin: 1.5%;
+.btn {
+    padding: 2px 20px;
 }
 
-.columns .rows {
-    background: #ffffff;
-    margin: 5px 5px 20px 5px;
-    padding: 5px;
-    border-radius: 10px;
-    text-align: center;
-    min-width: 20%;
+.card h4 {
+    margin-top: 0;
+    margin-right: 40px;
+}
+
+.card h2 {
+    padding-bottom: 10px;
+    border-bottom: 1px solid grey;
+}
+
+.card-icons a {
+    margin-left: 5px;
+    cursor: pointer; 
     position: relative;
 }
 
-.deleteTask {
-    width: 25px;
-    height: 20px;
+.panel-default {
+    border-radius: 0;
+}
+
+/*
+TODO
+.card textarea {
+    margin-top: 0;
+    max-width: 100%;
+    min-width: 100%;
+    margin-bottom: 5px;
     padding: 0;
-    margin: 0;
-    cursor: pointer;
-    float: right; 
-    position: relative;
-}
-
-.deleteTask:after {
-    content: 'X';
-    font-size: 16px;
-    font-family: sans-serif;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.deleteTask:hover {
-    background: #7ca39e;
-    border-radius: 40%;
-}
-
-.rows textarea {
-    resize:none;
-    height: 40px;
-    width: 90%;
-}
-
-.columns > p {
-    margin: 0;
-    border-top: 2px grey solid;
-    padding: 10px;
-    text-align: left;
-    color: #ffffff;
-    font-family: sans-serif;
-}
-
-.taskName {
-    text-align: center;
-}
-
-.taskName span {
-    position: relative;
-}
-
-.taskName span:after {
-    content: "";
-    height: 0;
-    width: 0;
-    border-style: solid;
-    border-width: 8px;
-    border-color: transparent grey transparent transparent ;
-    position: absolute;
-    right: -20px;
-    top: 2px;
-}
-
-.taskName span:before {
-    content: "";
-    height: 0;
-    width: 0;
-    border-style: solid;
-    border-width: 8px;
-    border-color: transparent transparent transparent grey;
-    position: absolute;
-    left: -20px;
-    top: 2px;
-}
+    background-color: transparent;
+    border: none;
+}*/

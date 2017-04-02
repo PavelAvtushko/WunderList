@@ -1,20 +1,29 @@
-<ul class="clearfix">
-    <li class = "columns" ng-repeat = "taskType in $ctrl.columns">
-        <h2>{{::taskType.name}}</h2>
-        <ul>
-            <li class = "rows" ng-repeat = "el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' ">
-                <div class = "taskTopPanel clearfix">
-                    <a class="deleteTask" ng-click = "$ctrl.deleteItem(el)"></a>
-                </div>
-                <div class="taskName"> <span>{{el.name || "No name"}} </span></div>
-                <div></div>
-                <textarea readonly> {{el.description || "No description"}}</textarea>
-                <div>
-                    <button ng-click = "$ctrl.moveLeft(el)">Left</button>
-                    <button ng-click = "$ctrl.moveRight(el)">Right</button>
-                <div> 
-            </li>
-        </ul>
-        <p> Tasks: {{quontity.length}}</p>
-    </li>
-</ul>
+<div class="card">
+    <div class = "col-md-3 panel panel-default" ng-repeat = "taskType in $ctrl.columns">
+        <h2 class="text-center">{{::taskType.name}}</h2>
+        <div class ="well" ng-repeat = "el in quontity = ($ctrl.data | filter : {status: taskType.id} ) | orderBy:'lastModifyDate' " >
+            <div class = "pull-right card-icons">
+                <a ng-click = "$ctrl.deleteItem(el)" class = "pull-right">
+                    <i class ="glyphicon glyphicon-trash"></i>
+                </a>
+<!--            <a ng-click = "$ctrl.upgadeItems(el)" class = "pull-right">
+                    <i class ="glyphicon glyphicon-pencil"></i>
+                </a> -->
+            </div>
+            <h4> {{el.name || "No name"}}</h4>
+            <p> {{ el.description || 'No description' }} </p>
+            <p> Modify: {{ el.lastModifyDate | date:"MM/dd/yyyy 'at' h:mma"}} </p>
+<!--TODO    <p> Author </p> -->
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveLeft(el)" ng-hide = "taskType.id === 0" >
+                    <i class="glyphicon glyphicon-chevron-left"></i>
+                </button>
+                <button type="button" class="btn btn-default" ng-click = "$ctrl.moveRight(el)" ng-hide = "taskType.id === $ctrl.columns.length - 1">
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <p> Total: {{quontity.length}}</p>
+    </div>
+</div>
+

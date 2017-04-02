@@ -1,5 +1,8 @@
-<div class="wrapper">
+<div class="wrapper container">
+    <p class = "pull-left text-info" ng-show="$ctrl.userName">Current user: {{$ctrl.userName}}</p>
     <h1>Custom WunderList application</h1>
     <navbar></navbar>
-    <ui-view></ui-view>
+    <div class="row">
+        <ui-view></ui-view>
+    </div>
 </div>

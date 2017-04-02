@@ -1,47 +1,44 @@
-import {URL} from '../../constants.js';
+const REDIRECTION_PATH = "/Home/Tasks";
 
 class tasksFormController {
-    constructor($http, $location) {
-        console.log('tasksFormController...');
+    constructor($location) {
         this.description;
         this.title;
-        this.data;
-        this.columnID;
-        this.$http = $http;
-        this.$location=$location;
+        this.columnID = 0;
+        this.$location = $location;
+    }
+ 
+    sendData() {
+        this.parent.sendNewData(this.createData());
+        this.reset();
     }
 
-    sendData() {
-        // debugger;
-        if (typeof this.title === "undefined" ||
-            typeof this.description === "undefined") {
-            return;
-        }
-
-        let newData = {
+    createData(){
+        return {
             "name": this.title,
             "status": this.columnID || "0",
             "description": this.description,
             "lastModifyDate": Date.now(),
             "id": Date.now()
         };
+    }
 
-        this.$http.put('/tasks', newData).then(obj => {
-            this.data.push(obj.data);
-        });
-
-        event.preventDefault();
+    reset() {
+        this.description = null;
+        this.title = null;
+        this.columnID = 0;
     }
 
     deleteTasks() {
-        this.$http.delete(URL)
-            .then((res) => {
-                this.data.length = 0;
-            });
-        this.$location.path("#/Home");
+        this.parent.deleteTasks();
+        this.$location.path(REDIRECTION_PATH);
+    }
+
+    isEmpty(){
+        return this.parent.isEmpty();
     }
 }
 
-tasksFormController.$inject = ['$http', '$location'];
+tasksFormController.$inject = ['$location'];
 
 export default tasksFormController;

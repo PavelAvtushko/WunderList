@@ -1,47 +1,45 @@
 const db = require('../db.js');
 
-exports.getAllTasks = function(callback) {
+exports.getAllTasks = function(user, callback) {
     db.get()
-        .collection('listOfTasks')
+        .collection(user)
         .find()
         .toArray (
             function (err, docs) {
-                callback(err, docs)
+                callback(err, docs);
             }
-        )
-}
+        );
+};
 
-exports.deleteById = function (itemId, callback) {
+exports.deleteById = function (user, itemId, callback) {
     db.get()
-        .collection('listOfTasks')
+        .collection(user)
         .deleteOne({id: itemId},
         function(err, result){
             callback(err, result);
-        })
-}
+        });
+};
 
-exports.putNewTask = function(newData, callback) {
-    db.get().collection('listOfTasks').insert(newData, function(err, result){
+exports.putNewTask = function(user, newData, callback) {
+    db.get().collection(user).insert(newData, function(err, result){
         callback(err, result);
-    })
-}
+    });
+};
 
-
-exports.deleteAllTasks = function(callback){
-     db.get().collection('listOfTasks').remove({},
+exports.deleteAllTasks = function(user, callback){
+     db.get().collection(user).remove({},
         function(err, result){
             callback(err, result);
         });
-}
+};
 
-
-exports.updateTask = function(itemId, newData, callback) {
-    db.get().collection('listOfTasks')
+exports.updateTask = function(user, itemId, newData, callback) {
+    db.get().collection(user)
         .updateOne(
-            {id: itemId}, //условие которое находит элемент
-            newData, //объект с данными, которые хотим обновить
+            {id: itemId}, //finds element by id
+            newData,
             function(err, result){
                 callback(err, result);
             }
     );
-}
+};

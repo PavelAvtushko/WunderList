@@ -1,0 +1,60 @@
+<div class="map">
+        <header class="row">
+            <div class="col-md-12" ng-show = "$ctrl.imageCollection.length">
+                <ul class = "container clearfix">
+                    <li ng-repeat="el in $ctrl.imageCollection">
+                        <a ng-href="" ng-click = "$ctrl.showImage(el)">
+                            <img ng-src="{{el.img.src}}" alt="">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+    <main>
+        <div class="row">
+            <div class="col-md-6">
+                <div id = "mainPicture" ng-show = "$ctrl.currentImage">
+                    <img alt="picture" class = "img-responsive" ng-src = " {{$ctrl.currentImage.img.src}} ">
+                </div>
+<!--                 <h4 class="hidden">User image description ( 
+                    <a id = "editInfo"> edit </a> ) 
+                </h4> 
+                <form class="description-form hidden">
+                        <div class="form-group">
+                            <label for="image-description">Description</label>
+                            <textarea class="form-control" id="image-description" placeholder="Description"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-info">Submit</button>
+                        <button type="button" class="btn btn-warning">Cancel</button>
+                </form> -->
+            </div>
+
+
+
+<!--        <div class="col-md-3">
+                <p class="exif-data"></p>
+            </div> -->
+
+            <div class="col-md-6">
+                <div id="googleMap" ng-show="$ctrl.currentImage.coord.x || $ctrl.currentImage.coord.y"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <input type="file" name="image" class="file">
+                <div class="form-group input-group">
+                    <input type="text" class="form-control input-lg pathToFile" disabled placeholder="No file chosen">
+                    <span class="input-group-btn">
+                        <button class="browse btn btn-info input-lg" type="button" id = "browse" ng-click="$ctrl.browse()"><i class="glyphicon glyphicon-search"></i> Browse</button>
+                    </span>
+                </div>
+                <div class="form-group input-group">
+                    <button class="btn btn-info input-lg" type="button" id = "load" ng-click="$ctrl.loadFile($ctrl.file)">Upload </button>
+                </div>
+            </form>
+    </footer>
+</div>
